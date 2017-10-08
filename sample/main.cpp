@@ -30,11 +30,11 @@ int main(int argc, char** argv)
     "gklsS", cmdline::oneof<std::string>("gklsS", "gklsH", "grish"));
   parser.parse_check(argc, argv);
 
-  EvolventType evolventType;
+  MultiEvloventType evolventType;
   if(parser.get<std::string>("evolventType") == "rotated")
-  evolventType = EvolventType::Rotated;
+  evolventType = MultiEvloventType::Rotated;
   else if(parser.get<std::string>("evolventType") == "shifted")
-  evolventType = EvolventType::Shifted;
+  evolventType = MultiEvloventType::Shifted;
 
   auto parameters = SolverParameters(parser.get<double>("accuracy"),
   parser.get<double>("reserves"),
