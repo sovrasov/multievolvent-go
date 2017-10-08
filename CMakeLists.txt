@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(PROJECT_NAME_STR multievilvent-sample)
+set(PROJECT_NAME_STR multievolvent-sample)
 project(${PROJECT_NAME_STR})
 
 #initial setup

@@ -331,7 +331,7 @@ void numbr(int *iss)
 }
 
 void invmad(int m, double xp[], int kp,
-  int *kxx, const double p[], int n, int incr)
+  int *kxx, double p[], int n, int incr)
 {
   /* calculate kx preimage p node */
   /*   node type mapping m level  */

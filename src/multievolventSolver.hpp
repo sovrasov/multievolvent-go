@@ -12,7 +12,7 @@ struct SolverParameters
   double rEps;
   double r;
   unsigned numEvolvents;
-  unsigned evloventTightness = 12;
+  unsigned evolventTightness = 12;
   MultiEvloventType evolventType;
   unsigned iterationsLimit;
   int localMix;
@@ -32,7 +32,20 @@ protected:
   std::shared_ptr<IGOProblem<double>> mProblem;
   std::shared_ptr<Evolvent> mEvolvent;
 
+  std::vector<Trial> mSearchData;
+  std::vector<double> mHEstimations;
+  std::vector<double> mZEstimations;
+
+  std::vector<int> mTrialsNumber;
+  unsigned mIterationsCounter;
+  int mMaxV;
+  const double mLocalOffset;
+  double mDimExponent;
+
+  Trial mNextPoint;
+
   void InitDataStructures();
+  void FirstIteration();
 public:
   MultievolventSolver();
 

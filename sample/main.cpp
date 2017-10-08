@@ -14,18 +14,18 @@ int main(int argc, char** argv)
 {
   cmdline::parser parser;
   parser.add<int>("evolventTightness", 'm', "", false, 12,
-        cmdline::range(9, 16));
-  parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
-        "on evolvent type, tightness and dimenstion)", false, 1, cmdline::oneof(1, 20));
+    cmdline::range(9, 16));
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
-          false, "rotated", cmdline::oneof<std::string>("rotated", "shifted"));
+    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted"));
+  parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
+        "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
   parser.add<double>("reliability", 'r', "reliability parameter for the method",
-    false, 4.5, cmdline::range(1., 1000.));
+    false, 2.5, cmdline::range(1., 1000.));
   parser.add<double>("accuracy", 'e', "accuracy of the method", false, 0.01);
   parser.add<double>("reserves", 'E', "eps-reserves for all constraints", false, 0);
-  parser.add<int>("itersLimit", 'l', "limit of iterations for the method", false, 2000);
+  parser.add<int>("itersLimit", 'i', "limit of iterations for the method", false, 2000);
   parser.add<int>("dim", 'd', "test problem dimension (will be set if supported)", false, 2);
-  parser.add<int>("localMix", 'm', "local mix parameter", false, 0);
+  parser.add<int>("localMix", 'q', "local mix parameter", false, 0, cmdline::range(-20, 20));
   parser.add<std::string>("problemsClass", 'c', "Name of the used problems class", false,
     "gklsS", cmdline::oneof<std::string>("gklsS", "gklsH", "grish"));
   parser.parse_check(argc, argv);
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   evolventType,
   parser.get<int>("itersLimit"),
   parser.get<int>("localMix"));
-  parameters.evloventTightness = parser.get<int>("evolventTightness");
+  parameters.evolventTightness = parser.get<int>("evolventTightness");
 
   std::shared_ptr<IGOProblem<double>> problem;
   std::string problemClass = parser.get<std::string>("problemsClass");
