@@ -74,6 +74,7 @@ int main(int argc, char** argv)
 
   std::cout << "Optimum value " << optimalPoint.g[optimalPoint.v] << "\n";
   std::cout << "Real Optimum value " << problem->GetOptimumValue() << "\n";
+  std::cout << "Trials performed: " << stats[0] << "\n";
 
   return 0;
 }

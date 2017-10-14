@@ -45,7 +45,7 @@ namespace
     }
     int GetOptimumPoint(double* y) const
     {
-      mOriginalProblem->GetOptimumPoint(y);
+      return mOriginalProblem->GetOptimumPoint(y);
     }
     double GetOptimumValue() const
     {
@@ -171,18 +171,20 @@ void MultievolventSolver::CalculateHEstimationsAfterInsert(size_t idx)
   int left_idx = idx - 1;
   while(left_idx > 0 && mSearchData[left_idx].v != currentPoint.v)
     left_idx--;
-  if(left_idx != (int)idx && mSearchData[left_idx].v == mSearchData[idx].v && left_idx != -1)
+  if(left_idx != (int)idx && mSearchData[left_idx].v == mSearchData[idx].v)
     UpdateMu(mSearchData[left_idx], mSearchData[idx]);
 
   size_t right_idx = idx + 1;
   while(right_idx < mSearchData.size() - 1 && mSearchData[right_idx].v != currentPoint.v)
     right_idx++;
-  if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v && left_idx != -1)
+  if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v)
     UpdateMu(mSearchData[idx], mSearchData[right_idx]);
 }
 
 void MultievolventSolver::UpdateMu(const Trial& left, const Trial& right)
 {
+  if (left.v != right.v)
+    throw std::runtime_error("Different indexes in UpdateMu\n");
   double oldMu = mHEstimations[left.v];
   double newMu = fabs(right.g[right.v] - left.g[left.v]) /
     pow(right.x - left.x, mDimExponent);
@@ -192,15 +194,17 @@ void MultievolventSolver::UpdateMu(const Trial& left, const Trial& right)
 
 void MultievolventSolver::RecalcR()
 {
-  double maxR = std::numeric_limits<double>::min();
+  double maxR = std::numeric_limits<double>::lowest();
   const size_t numIntervals = mSearchData.size() - 1;
 
   for(size_t i = 0; i < numIntervals; i++)
   {
     Interval currentInt(mSearchData[i], mSearchData[i + 1]);
     currentInt.delta = pow(currentInt.pr.x - currentInt.pl.x, mDimExponent);
-    currentInt.R = CalculateR(currentInt);
+    if (currentInt.delta == 0)
+      throw std::runtime_error("zero lenght interval\n");
 
+    currentInt.R = CalculateR(currentInt);
     if(currentInt.R > maxR)
     {
       maxR = currentInt.R;
@@ -216,7 +220,7 @@ void MultievolventSolver::CalculateNextPoints()
     const int v = mBestInterval.pr.v;
     double dg = mBestInterval.pr.g[v] - mBestInterval.pl.g[v];
     mNextPoint.x = 0.5 * (mBestInterval.pr.x + mBestInterval.pl.x) -
-      0.5*((dg > 0.) ? 1. : -1.) * pow(fabs(dg) / mHEstimations[v], mProblem->GetDimension()) / (2*mParameters.r);
+      0.5*((dg > 0.) ? 1. : -1.) * pow(fabs(dg) / mHEstimations[v], mProblem->GetDimension()) / mParameters.r;
   }
   else
     mNextPoint.x = 0.5 * (mBestInterval.pr.x + mBestInterval.pl.x);
@@ -273,7 +277,7 @@ Trial MultievolventSolver::Solve()
 
 std::vector<int> MultievolventSolver::GetCalculationsStatistics() const
 {
-  return std::vector<int>();
+  return std::vector<int>(1, mIterationsCounter);
 }
 
 double MultievolventSolver::CalculateR(const Interval& i) const
@@ -282,7 +286,7 @@ double MultievolventSolver::CalculateR(const Interval& i) const
   {
     const int v = i.pr.v;
     return i.delta + pow((i.pr.g[v] - i.pl.g[v]) / (mParameters.r * mHEstimations[v]), 2) / i.delta -
-      2.*(i.pr.g[v] + i.pl.g[v] - 2*mZEstimations[v]);
+      2.*(i.pr.g[v] + i.pl.g[v] - 2*mZEstimations[v]) / (mParameters.r * mHEstimations[v]);
   }
   else if(i.pl.v < i.pr.v)
     return 2*i.delta - 4*(i.pr.g[i.pr.v] - mZEstimations[i.pr.v]) / (mParameters.r * mHEstimations[i.pr.v]);
