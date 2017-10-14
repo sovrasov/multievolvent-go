@@ -47,34 +47,58 @@ int main(int argc, char** argv)
 
   std::shared_ptr<IGOProblem<double>> problem;
   std::string problemClass = parser.get<std::string>("problemsClass");
-  if(problemClass == "gklsS" || problemClass == "gklsH")
-  {
-    auto *func = new gkls::GKLSFunction();
-    if(problemClass == "gklsS")
-      func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
-    else
-      func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
-
-    func->SetType(gkls::TD);
-    func->SetFunctionNumber(1);
-    problem = std::shared_ptr<IGOProblem<double>>(func);
-  }
-  else if(problemClass == "grish")
-  {
-    auto *func = new vagrish::GrishaginFunction();
-    func->SetFunctionNumber(1);
-    problem = std::shared_ptr<IGOProblem<double>>(func);
-  }
 
   MultievolventSolver solver;
   solver.SetParameters(parameters);
-  solver.SetProblem(problem);
-  Trial optimalPoint = solver.Solve();
-  std::vector<int> stats = solver.GetCalculationsStatistics();
+  auto start = std::chrono::system_clock::now();
 
-  std::cout << "Optimum value " << optimalPoint.g[optimalPoint.v] << "\n";
-  std::cout << "Real Optimum value " << problem->GetOptimumValue() << "\n";
-  std::cout << "Trials performed: " << stats[0] << "\n";
+  std::vector<std::vector<int>> allStatistics;
+  int solvedCounter = 0;
+
+  for (int i = 0; i < 100; i++)
+  {
+    if (problemClass == "gklsS" || problemClass == "gklsH")
+    {
+      auto *func = new gkls::GKLSFunction();
+      if (problemClass == "gklsS")
+        func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
+      else
+        func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
+
+      func->SetType(gkls::TD);
+      func->SetFunctionNumber(i + 1);
+      problem = std::shared_ptr<IGOProblem<double>>(func);
+    }
+    else if (problemClass == "grish")
+    {
+      auto *func = new vagrish::GrishaginFunction();
+      func->SetFunctionNumber(i + 1);
+      problem = std::shared_ptr<IGOProblem<double>>(func);
+    }
+
+    solver.SetProblem(problem);
+
+    Trial optimalPoint = solver.Solve();
+    allStatistics.push_back(solver.GetCalculationsStatistics());
+
+    double optPoint[solverMaxDim];
+    problem->GetOptimumPoint(optPoint);
+    bool isSolved = solver_utils::checkVectorsDiff(optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
+    std::cout << "Problem #" << i + 1;
+    if (isSolved)
+    {
+      solvedCounter++;
+      std::cout << " solved.";
+    }
+    else
+      std::cout << " not solved.";
+    std::wcout << " Iterations performed: " << allStatistics.back()[0] << "\n";
+  }
+  auto end = std::chrono::system_clock::now();
+
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
+  std::wcout << "Problems solved: " << solvedCounter << "\n";
 
   return 0;
 }

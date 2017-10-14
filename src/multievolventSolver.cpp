@@ -10,21 +10,25 @@ namespace
   {
   protected:
     std::shared_ptr<IGOProblem<double>> mOriginalProblem;
+    double mUb[solverMaxDim];
+    double mLb[solverMaxDim];
 
     double CalculateZeroConstraint(const double* y) const
     {
-      double value = std::numeric_limits<double>::min();
+      double value = std::numeric_limits<double>::lowest();
 
-      //for (int i = 0; i < mOriginalProblem->GetDimension(); i++)
-      //  value = fmax(value, (fabs(y[i] - spaceShift[i])
-      //    - (rightBnd[i] - leftBnd[i])*0.5) / rho);
+      for (int i = 0; i < mOriginalProblem->GetDimension(); i++)
+        value = fmax(value, (fabs(y[i] - 0.5*(mUb[i] + mLb[i]))
+          - 0.5*(mUb[i] - mLb[i])));
 
       return value;
     }
   public:
     ShiftedEvolventGOProblem(std::shared_ptr<IGOProblem<double>> problem) :
       mOriginalProblem(problem)
-    {}
+    {
+      mOriginalProblem->GetBounds(mLb, mUb);
+    }
     double Calculate(const double* y, int fNumber) const
     {
       if(fNumber == 0)

@@ -25,6 +25,20 @@ struct SolverParameters
   {}
 };
 
+namespace solver_utils
+{
+  inline bool checkVectorsDiff(const double* y1, const double* y2, size_t dim, double eps)
+  {
+    for (size_t i = 0; i < dim; i++)
+    {
+      if (fabs(y1[i] - y2[i]) > eps)
+        return true;
+    }
+
+    return false;
+  }
+}
+
 class MultievolventSolver
 {
 protected:
