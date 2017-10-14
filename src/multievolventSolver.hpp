@@ -35,6 +35,7 @@ protected:
   std::vector<Trial> mSearchData;
   std::vector<double> mHEstimations;
   std::vector<double> mZEstimations;
+  std::vector<double> mPreimages;
 
   std::vector<int> mTrialsNumber;
   unsigned mIterationsCounter;
@@ -43,6 +44,10 @@ protected:
   double mDimExponent;
 
   Trial mNextPoint;
+
+  void MakeTrial(Trial& trial);
+  void CalculateHEstimationsAfterInsert(size_t insert_idx);
+  void UpdateMu(const Trial& left, const Trial& right);
 
   void InitDataStructures();
   void FirstIteration();

@@ -98,6 +98,8 @@ void MultievolventSolver::InitDataStructures()
   mZEstimations.resize(mProblem->GetConstraintsNumber() + 1);
   std::fill(mZEstimations.begin(), mZEstimations.end(), std::numeric_limits<double>::max());
 
+  mPreimages.resize(mParameters.numEvolvents);
+
   mMaxV = 0;
   mDimExponent = 1. / mProblem->GetDimension();
 }
@@ -106,19 +108,94 @@ void MultievolventSolver::FirstIteration()
 {
   for(unsigned i = 0; i <= mParameters.numEvolvents; i++)
   {
-    mSearchData.emplace_back(static_cast<double>(0));
-    mSearchData.back().v = 0;
     mSearchData.emplace_back(static_cast<double>(i));
-    mSearchData.back().v = 0;
+    mSearchData.back().v = -1;
+  }
+
+  if(mParameters.evolventType == MultiEvloventType::Rotated)
+  {
+    mNextPoint.x = 0.5;
+  }
+  else
+  {
+    ;//TODO
+  }
+
+  MakeTrial(mNextPoint);
+  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
+
+  for(unsigned i = 0; i < mParameters.numEvolvents; i++)
+  {
+    Trial newPoint = mNextPoint;
+    newPoint.x = mPreimages[i];
+    size_t insert_idx = insert_sorted(mSearchData, newPoint);
+    CalculateHEstimationsAfterInsert(insert_idx);
   }
 
   mIterationsCounter = 1;
+}
+
+void MultievolventSolver::MakeTrial(Trial& trial)
+{
+  mEvolvent->GetImage(trial.x, trial.y);
+
+  trial.v = 0;
+  while(trial.v < mProblem->GetConstraintsNumber())
+  {
+    trial.g[trial.v] = mProblem->Calculate(trial.y, trial.v);
+    if(trial.g[trial.v] > 0)
+      break;
+    else
+      trial.v++;
+  }
+
+  if(trial.v > mMaxV)
+  {
+    mMaxV = trial.v;
+    for(int i = 0; i < mMaxV; i++)
+      mZEstimations[i] = -mParameters.rEps;
+  }
+
+  if(trial.v == mProblem->GetConstraintsNumber())
+    trial.g[trial.v] = mProblem->Calculate(trial.y, trial.v);
+}
+
+void MultievolventSolver::CalculateHEstimationsAfterInsert(size_t idx)
+{
+  Trial& currentPoint = mSearchData[idx];
+  int left_idx = idx - 1;
+  while(left_idx > 0 && mSearchData[left_idx].v != currentPoint.v)
+    left_idx--;
+  if(left_idx != (int)idx && mSearchData[left_idx].v == mSearchData[idx].v && left_idx != -1)
+    UpdateMu(mSearchData[left_idx], mSearchData[idx]);
+
+  //if(searchRight)
+  {
+    size_t right_idx = idx + 1;
+    while(right_idx < mSearchData.size() - 1 && mSearchData[right_idx].v != currentPoint.v)
+      right_idx++;
+    if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v && left_idx != -1)
+      UpdateMu(mSearchData[idx], mSearchData[right_idx]);
+  }
+}
+
+void MultievolventSolver::UpdateMu(const Trial& left, const Trial& right)
+{
+  double oldMu = mHEstimations[left.v];
+  double newMu = fabs(right.g[right.v] - left.g[left.v]) /
+    pow(right.x - left.x, mDimExponent);
+  if (newMu > oldMu || (oldMu == 1.0 && newMu > zeroHLevel))
+  {
+    mHEstimations[left.v] = newMu;
+  }
 }
 
 Trial MultievolventSolver::Solve()
 {
   InitDataStructures();
   FirstIteration();
+
+
   return Trial();
 }
 

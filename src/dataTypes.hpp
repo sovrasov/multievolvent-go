@@ -7,8 +7,7 @@ struct Trial
 {
   double x;
   double y[solverMaxDim];
-  double z;
-  double g[solverMaxConstraints];
+  double g[solverMaxConstraints + 1];
   int v;
   Trial() {}
   Trial(double _x) : x(_x){}
