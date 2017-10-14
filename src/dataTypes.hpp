@@ -22,8 +22,8 @@ struct Interval
 {
   Trial pl;
   Trial pr;
-  double R;
   double delta;
+  double R;
   Interval() {}
   Interval(const Trial& _xl, const Trial& _xr) : pl(_xl), pr(_xr) {}
 };

@@ -72,5 +72,8 @@ int main(int argc, char** argv)
   Trial optimalPoint = solver.Solve();
   std::vector<int> stats = solver.GetCalculationsStatistics();
 
+  std::cout << "Optimum value " << optimalPoint.g[optimalPoint.v] << "\n";
+  std::cout << "Real Optimum value " << problem->GetOptimumValue() << "\n";
+
   return 0;
 }

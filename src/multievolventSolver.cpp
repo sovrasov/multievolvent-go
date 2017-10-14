@@ -2,6 +2,7 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <exception>
 
 namespace
 {
@@ -102,6 +103,7 @@ void MultievolventSolver::InitDataStructures()
 
   mMaxV = 0;
   mDimExponent = 1. / mProblem->GetDimension();
+  mBestPoint.v = -1;
 }
 
 void MultievolventSolver::FirstIteration()
@@ -158,6 +160,9 @@ void MultievolventSolver::MakeTrial(Trial& trial)
 
   if(trial.v == mProblem->GetConstraintsNumber())
     trial.g[trial.v] = mProblem->Calculate(trial.y, trial.v);
+
+  if(trial.v == mMaxV)
+    mZEstimations[trial.v] = fmin(mZEstimations[trial.v], trial.g[trial.v]);
 }
 
 void MultievolventSolver::CalculateHEstimationsAfterInsert(size_t idx)
@@ -169,14 +174,11 @@ void MultievolventSolver::CalculateHEstimationsAfterInsert(size_t idx)
   if(left_idx != (int)idx && mSearchData[left_idx].v == mSearchData[idx].v && left_idx != -1)
     UpdateMu(mSearchData[left_idx], mSearchData[idx]);
 
-  //if(searchRight)
-  {
-    size_t right_idx = idx + 1;
-    while(right_idx < mSearchData.size() - 1 && mSearchData[right_idx].v != currentPoint.v)
-      right_idx++;
-    if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v && left_idx != -1)
-      UpdateMu(mSearchData[idx], mSearchData[right_idx]);
-  }
+  size_t right_idx = idx + 1;
+  while(right_idx < mSearchData.size() - 1 && mSearchData[right_idx].v != currentPoint.v)
+    right_idx++;
+  if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v && left_idx != -1)
+    UpdateMu(mSearchData[idx], mSearchData[right_idx]);
 }
 
 void MultievolventSolver::UpdateMu(const Trial& left, const Trial& right)
@@ -185,21 +187,105 @@ void MultievolventSolver::UpdateMu(const Trial& left, const Trial& right)
   double newMu = fabs(right.g[right.v] - left.g[left.v]) /
     pow(right.x - left.x, mDimExponent);
   if (newMu > oldMu || (oldMu == 1.0 && newMu > zeroHLevel))
-  {
     mHEstimations[left.v] = newMu;
+}
+
+void MultievolventSolver::RecalcR()
+{
+  double maxR = std::numeric_limits<double>::min();
+  const size_t numIntervals = mSearchData.size() - 1;
+
+  for(size_t i = 0; i < numIntervals; i++)
+  {
+    Interval currentInt(mSearchData[i], mSearchData[i + 1]);
+    currentInt.delta = pow(currentInt.pr.x - currentInt.pl.x, mDimExponent);
+    currentInt.R = CalculateR(currentInt);
+
+    if(currentInt.R > maxR)
+    {
+      maxR = currentInt.R;
+      mBestInterval = currentInt;
+    }
   }
+}
+
+void MultievolventSolver::CalculateNextPoints()
+{
+  if(mBestInterval.pr.v == mBestInterval.pl.v)
+  {
+    const int v = mBestInterval.pr.v;
+    double dg = mBestInterval.pr.g[v] - mBestInterval.pl.g[v];
+    mNextPoint.x = 0.5 * (mBestInterval.pr.x + mBestInterval.pl.x) -
+      0.5*((dg > 0.) ? 1. : -1.) * pow(fabs(dg) / mHEstimations[v], mProblem->GetDimension()) / (2*mParameters.r);
+  }
+  else
+    mNextPoint.x = 0.5 * (mBestInterval.pr.x + mBestInterval.pl.x);
+
+  if (mNextPoint.x >= mBestInterval.pr.x || mNextPoint.x <= mBestInterval.pl.x)
+    throw std::runtime_error("Point is outside of interval\n");
+
+  MakeTrial(mNextPoint);
+}
+
+void MultievolventSolver::InsertNextPoints()
+{
+  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
+  for(unsigned i = 0; i < mParameters.numEvolvents; i++)
+  {
+    Trial newPoint = mNextPoint;
+    newPoint.x = mPreimages[i];
+    size_t insert_idx = insert_sorted(mSearchData, newPoint);
+    CalculateHEstimationsAfterInsert(insert_idx);
+  }
+}
+
+bool MultievolventSolver::CheckStopCondition() const
+{
+  return mBestInterval.delta < mParameters.eps;
+}
+
+void MultievolventSolver::EstimateOptimum()
+{
+  if(mNextPoint.v > mBestPoint.v ||
+      (mNextPoint.v == mBestPoint.v && mNextPoint.g[mNextPoint.v] < mBestPoint.g[mBestPoint.v]))
+    mBestPoint = mNextPoint;
 }
 
 Trial MultievolventSolver::Solve()
 {
+  bool needStop = false;
+
   InitDataStructures();
   FirstIteration();
+  RecalcR();
 
+  do {
+    CalculateNextPoints();
+    EstimateOptimum();
+    InsertNextPoints();
+    RecalcR();
+    needStop = CheckStopCondition();
+    mIterationsCounter++;
+  } while(mIterationsCounter < mParameters.iterationsLimit && !needStop);
 
-  return Trial();
+  return mBestPoint;
 }
 
 std::vector<int> MultievolventSolver::GetCalculationsStatistics() const
 {
   return std::vector<int>();
+}
+
+double MultievolventSolver::CalculateR(const Interval& i) const
+{
+  if(i.pl.v == i.pr.v)
+  {
+    const int v = i.pr.v;
+    return i.delta + pow((i.pr.g[v] - i.pl.g[v]) / (mParameters.r * mHEstimations[v]), 2) / i.delta -
+      2.*(i.pr.g[v] + i.pl.g[v] - 2*mZEstimations[v]);
+  }
+  else if(i.pl.v < i.pr.v)
+    return 2*i.delta - 4*(i.pr.g[i.pr.v] - mZEstimations[i.pr.v]) / (mParameters.r * mHEstimations[i.pr.v]);
+  else
+    return 2*i.delta - 4*(i.pl.g[i.pl.v] - mZEstimations[i.pl.v]) / (mParameters.r * mHEstimations[i.pl.v]);
 }

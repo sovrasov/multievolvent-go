@@ -44,13 +44,22 @@ protected:
   double mDimExponent;
 
   Trial mNextPoint;
+  Interval mBestInterval;
+  Trial mBestPoint;
 
   void MakeTrial(Trial& trial);
   void CalculateHEstimationsAfterInsert(size_t insert_idx);
   void UpdateMu(const Trial& left, const Trial& right);
+  void RecalcR();
+  double CalculateR(const Interval& i) const;
+
 
   void InitDataStructures();
   void FirstIteration();
+  void CalculateNextPoints();
+  void InsertNextPoints();
+  bool CheckStopCondition() const;
+  void EstimateOptimum();
 public:
   MultievolventSolver();
 
