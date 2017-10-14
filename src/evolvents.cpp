@@ -179,7 +179,6 @@ int RotatedEvolvent::GetAllPreimages(const double* p, double xp[])
 {
   double xx;
   TransformToStandardCube(p, p2.data());
-  //std::copy_n(p, mDimension, p2);
   xyd(&xx, mTightness, p2.data(), mDimension);
   xp[0] = xx;
   //Если одна развертка - далее ничего не делаем
@@ -189,12 +188,11 @@ int RotatedEvolvent::GetAllPreimages(const double* p, double xp[])
   for (int i = 1; i < mEvolventsNum; i++)
   {
     TransformToStandardCube(p, p2.data());
-    //std::copy_n(p, mDimension, p2);
     //Обратное преобразование координат
     int PlaneIndex = (i - 1) % mRotatedMapPlanesCount;
 
-    double tmp = p[mRotationPlanes[PlaneIndex][1]];
-    p2[mRotationPlanes[PlaneIndex][1]] = -p[mRotationPlanes[PlaneIndex][0]];
+    double tmp = p2[mRotationPlanes[PlaneIndex][1]];
+    p2[mRotationPlanes[PlaneIndex][1]] = -p2[mRotationPlanes[PlaneIndex][0]];
     p2[mRotationPlanes[PlaneIndex][0]] = tmp;
 
     if (i > mRotatedMapPlanesCount)//Меняем знак преобразования
