@@ -49,18 +49,17 @@ int main(int argc, char** argv)
   parameters.evolventTightness = parser.get<int>("evolventTightness");
   parameters.stopType = parser.exist("accuracyStop") ? SolverStopCriterion::Accuracy : SolverStopCriterion::OptimumVicinity;
 
-  std::shared_ptr<IGOProblem<double>> problem;
   std::string problemClass = parser.get<std::string>("problemsClass");
 
-  MultievolventSolver solver;
-  solver.SetParameters(parameters);
   auto start = std::chrono::system_clock::now();
-
   std::vector<std::vector<int>> allStatistics;
-  int solvedCounter = 0;
 
+#pragma omp parallel for num_threads(4), schedule(dynamic)
   for (int i = 0; i < 100; i++)
   {
+    std::shared_ptr<IGOProblem<double>> problem;
+    MultievolventSolver solver;
+    solver.SetParameters(parameters);
     if (problemClass == "gklsS" || problemClass == "gklsH")
     {
       auto *func = new gkls::GKLSFunction();
@@ -81,33 +80,33 @@ int main(int argc, char** argv)
     }
 
     solver.SetProblem(problem);
-
     Trial optimalPoint = solver.Solve();
-    allStatistics.push_back(solver.GetCalculationsStatistics());
+#pragma omp critical
+    {
+      allStatistics.push_back(solver.GetCalculationsStatistics());
 
-    double optPoint[solverMaxDim];
-    problem->GetOptimumPoint(optPoint);
-    bool isSolved = !solver_utils::checkVectorsDiff(
-      optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
-    std::cout << "Problem # " << i + 1;
-    if (isSolved)
-    {
-      solvedCounter++;
-      std::cout << " solved.";
-      allStatistics.back().push_back(1);
+      double optPoint[solverMaxDim];
+      problem->GetOptimumPoint(optPoint);
+      bool isSolved = !solver_utils::checkVectorsDiff(
+        optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
+      std::cout << "Problem # " << i + 1;
+      if (isSolved)
+      {
+        std::cout << " solved.";
+        allStatistics.back().push_back(1);
+      }
+      else
+      {
+        std::cout << " not solved.";
+        allStatistics.back().push_back(0);
+      }
+      std::cout << " Iterations performed: " << allStatistics.back()[0] << "\n";
     }
-    else
-    {
-      std::cout << " not solved.";
-      allStatistics.back().push_back(0);
-    }
-    std::cout << " Iterations performed: " << allStatistics.back()[0] << "\n";
   }
   auto end = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = end - start;
   std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
-  std::cout << "Problems solved: " << solvedCounter << "\n";
 
   saveStatistics(allStatistics, "stat.csv");
 
@@ -116,11 +115,20 @@ int main(int argc, char** argv)
 
 void saveStatistics(const std::vector<std::vector<int>>& stat, const std::string fileName)
 {
-  double avgIterations = 0;
-  for(size_t i = 0; i < stat.size(); i++)
+  size_t numFuncs = stat.back().size() - 1;
+  std::vector<double> avgCalcs(numFuncs, 0.);
+  int solvedCounter = 0;
+
+  for(const auto& elem : stat)
   {
-    avgIterations += stat[i].front();
+    for(size_t j = 0; j < numFuncs; j++)
+      avgCalcs[j] += elem[j];
+    solvedCounter += elem.back();
   }
-  avgIterations /= stat.size();
-  std::cout << "Average iterations number: " << avgIterations << "\n";
+  for(size_t j = 0; j < numFuncs; j++)
+  {
+    avgCalcs[j] /= stat.size();
+    std::cout << "Average calculations of function #: " << j << " = " << avgCalcs[j] << "\n";
+  }
+  std::cout << "Problems solved: " << solvedCounter << "\n";
 }

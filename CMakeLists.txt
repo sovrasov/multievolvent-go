@@ -24,7 +24,8 @@ file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 
 add_library(multi_evolvent_optimizer ${SRC_FILES})
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  target_compile_options(multi_evolvent_optimizer INTERFACE -std=c++11 -Wall -fopenmp -march=native)
+  target_compile_options(multi_evolvent_optimizer INTERFACE -std=c++11 -Wall -march=native)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   add_definitions(/EHsc /openmp)
 endif()

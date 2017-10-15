@@ -88,6 +88,7 @@ RotatedEvolvent::RotatedEvolvent(int dimension, int tightness, int evolventsNum,
   const double* lb, const double* ub) : Evolvent(dimension, tightness, lb, ub)
 {
   mEvolventsNum = evolventsNum;
+  assert(mEvolventsNum <= mDimension*(mDimension - 1) + 1);
   InitRotationPlanes();
 }
 
@@ -257,18 +258,18 @@ int ShiftedEvolvent::GetAllPreimages(const double* p, double xp[])
   return mEvolventsNum;
 }
 
-int n1, nexp, l, iq, iu[10], iv[10];
 
 void xyd(double *xx, int m, double y[], int n)
 {
   /* calculate preimage x  for nearest level  m center to y */
   /* (x - left boundary point of level m interval)          */
+  int n1, nexp, l, iq, iu[10], iv[10];
 
   double x, r1;
   double r;
   int iw[11];
   int i, j, it, is;
-  void numbr(int *);
+  void numbr(int *, const int, const int, int&, int*, int*);
 
   n1 = n - 1;
   for (nexp = 1, i = 0; i<n; i++) {
@@ -288,7 +289,7 @@ void xyd(double *xx, int m, double y[], int n)
     i = iu[0];
     iu[0] = iu[it];
     iu[it] = i;
-    numbr(&is);
+    numbr(&is, n1, nexp, l, iu, iv);
     i = iv[0];
     iv[0] = iv[it];
     iv[it] = i;
@@ -302,7 +303,7 @@ void xyd(double *xx, int m, double y[], int n)
   }
   *xx = x;
 }
-void numbr(int *iss)
+void numbr(int *iss, const int n1, const int nexp, int& l, int* iu, int* iv)
 {
   /* calculate s(u)=is,l(u)=l,v(u)=iv by u=iu */
 

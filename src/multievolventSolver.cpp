@@ -191,7 +191,7 @@ void MultievolventSolver::CalculateHEstimationsAfterInsert(size_t idx)
   size_t right_idx = idx + 1;
   while(right_idx < mSearchData.size() - 1 && mSearchData[right_idx].v != currentPoint.v)
     right_idx++;
-  if(right_idx != (int)idx && mSearchData[right_idx].v == mSearchData[idx].v)
+  if(right_idx != idx && mSearchData[right_idx].v == mSearchData[idx].v)
     UpdateMu(mSearchData[idx], mSearchData[right_idx]);
 }
 
