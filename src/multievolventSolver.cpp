@@ -18,8 +18,8 @@ namespace
       double value = std::numeric_limits<double>::lowest();
 
       for (int i = 0; i < mOriginalProblem->GetDimension(); i++)
-        value = fmax(value, (fabs(y[i] - 0.5*(mUb[i] + mLb[i]))
-          - 0.5*(mUb[i] - mLb[i])));
+        value = fmax(value, fabs(y[i] - 0.5*(mUb[i] + mLb[i]))
+          - 0.5*(mUb[i] - mLb[i]));
 
       return value;
     }
@@ -105,6 +105,9 @@ void MultievolventSolver::InitDataStructures()
 
   mPreimages.resize(mParameters.numEvolvents);
 
+  mTrialsNumber.resize(mProblem->GetConstraintsNumber() + 1);
+  std::fill(mTrialsNumber.begin(), mTrialsNumber.end(), 0);
+
   mMaxV = 0;
   mDimExponent = 1. / mProblem->GetDimension();
   mBestPoint.v = -1;
@@ -124,12 +127,15 @@ void MultievolventSolver::FirstIteration()
   }
   else
   {
-    ;//TODO
+    mNextPoint.x = pow(2., -mProblem->GetDimension() - 1);
   }
 
   MakeTrial(mNextPoint);
-  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
 
+  if(mParameters.evolventType == MultiEvloventType::Shifted && mNextPoint.v == 0)
+    throw std::runtime_error("Initial point is not in D");
+
+  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
   for(unsigned i = 0; i < mParameters.numEvolvents; i++)
   {
     Trial newPoint = mNextPoint;
@@ -149,6 +155,7 @@ void MultievolventSolver::MakeTrial(Trial& trial)
   while(trial.v < mProblem->GetConstraintsNumber())
   {
     trial.g[trial.v] = mProblem->Calculate(trial.y, trial.v);
+    mTrialsNumber[trial.v]++;
     if(trial.g[trial.v] > 0)
       break;
     else
@@ -163,7 +170,10 @@ void MultievolventSolver::MakeTrial(Trial& trial)
   }
 
   if(trial.v == mProblem->GetConstraintsNumber())
+  {
     trial.g[trial.v] = mProblem->Calculate(trial.y, trial.v);
+    mTrialsNumber[trial.v]++;
+  }
 
   if(trial.v == mMaxV)
     mZEstimations[trial.v] = fmin(mZEstimations[trial.v], trial.g[trial.v]);
@@ -281,7 +291,7 @@ Trial MultievolventSolver::Solve()
 
 std::vector<int> MultievolventSolver::GetCalculationsStatistics() const
 {
-  return std::vector<int>(1, mIterationsCounter);
+  return mTrialsNumber;
 }
 
 double MultievolventSolver::CalculateR(const Interval& i) const

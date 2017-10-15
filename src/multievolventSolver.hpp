@@ -1,6 +1,7 @@
 #pragma once
 #include <problem_interface.hpp>
 #include <vector>
+#include <cmath>
 #include <memory>
 
 #include "dataTypes.hpp"
@@ -66,7 +67,6 @@ protected:
   void UpdateMu(const Trial& left, const Trial& right);
   void RecalcR();
   double CalculateR(const Interval& i) const;
-
 
   void InitDataStructures();
   void FirstIteration();

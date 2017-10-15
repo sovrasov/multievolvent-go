@@ -231,7 +231,7 @@ void ShiftedEvolvent::GetImage(double x, double y[])
   TransformToSearchDomain(y, y);
 }
 
-int ShiftedEvolvent::GetAllPreimages(double* p, double xp[])
+int ShiftedEvolvent::GetAllPreimages(const double* p, double xp[])
 {
   double xx;
   double del = 0.5;
@@ -239,7 +239,9 @@ int ShiftedEvolvent::GetAllPreimages(double* p, double xp[])
   {
     TransformToStandardCube(p, p2.data());
     for (int j = 0; j < mDimension; j++)
+    {
       p2[j] = (p2[j] + del - 0.5) * 0.5;
+    }
 
     xyd(&xx, mTightness + 1, p2.data(), mDimension);
     xp[i] = xx + i;

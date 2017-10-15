@@ -50,8 +50,8 @@ protected:
 public:
   RotatedEvolvent(int dimension, int tightness, int evolventsNum, const double* lb, const double* ub);
   ~RotatedEvolvent();
-  virtual void GetImage(double x, double y[]);
-  virtual int GetAllPreimages(const double* p, double xp[]);
+  virtual void GetImage(double x, double y[]) override;
+  virtual int GetAllPreimages(const double* p, double xp[]) override;
 };
 
 class ShiftedEvolvent : public Evolvent
@@ -61,6 +61,6 @@ protected:
 
 public:
   ShiftedEvolvent(int dimension, int tightness, int evolventsNum, const double* lb, const double* ub);
-  virtual void GetImage(double x, double y[]);
-  virtual int GetAllPreimages(double* p, double xp[]);
+  virtual void GetImage(double x, double y[]) override;
+  virtual int GetAllPreimages(const double* p, double xp[]) override;
 };

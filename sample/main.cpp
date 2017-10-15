@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
         "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
   parser.add<double>("reliability", 'r', "reliability parameter for the method",
-    false, 2.5, cmdline::range(1., 1000.));
+    false, 3, cmdline::range(1., 1000.));
   parser.add<double>("accuracy", 'e', "accuracy of the method", false, 0.01);
   parser.add<double>("reserves", 'E', "eps-reserves for all constraints", false, 0);
   parser.add<int>("itersLimit", 'i', "limit of iterations for the method", false, 2000);
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
     double optPoint[solverMaxDim];
     problem->GetOptimumPoint(optPoint);
-    bool isSolved = solver_utils::checkVectorsDiff(optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
+    bool isSolved = !solver_utils::checkVectorsDiff(optPoint, optimalPoint.y, problem->GetDimension(), 0.01);
     std::cout << "Problem #" << i + 1;
     if (isSolved)
     {
@@ -92,13 +92,13 @@ int main(int argc, char** argv)
     }
     else
       std::cout << " not solved.";
-    std::wcout << " Iterations performed: " << allStatistics.back()[0] << "\n";
+    std::cout << " Iterations performed: " << allStatistics.back()[0] << "\n";
   }
   auto end = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = end - start;
   std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
-  std::wcout << "Problems solved: " << solvedCounter << "\n";
+  std::cout << "Problems solved: " << solvedCounter << "\n";
 
   return 0;
 }
