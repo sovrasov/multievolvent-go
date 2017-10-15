@@ -127,7 +127,7 @@ void MultievolventSolver::FirstIteration()
   }
   else
   {
-    mNextPoint.x = pow(2., -mProblem->GetDimension() - 1);
+    mNextPoint.x = pow(2., -mProblem->GetDimension() - 1) + 1e-6;
   }
 
   MakeTrial(mNextPoint);
