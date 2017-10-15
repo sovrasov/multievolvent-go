@@ -135,14 +135,8 @@ void MultievolventSolver::FirstIteration()
   if(mParameters.evolventType == MultiEvloventType::Shifted && mNextPoint.v == 0)
     throw std::runtime_error("Initial point is not in D");
 
-  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
-  for(unsigned i = 0; i < mParameters.numEvolvents; i++)
-  {
-    Trial newPoint = mNextPoint;
-    newPoint.x = mPreimages[i];
-    size_t insert_idx = insert_sorted(mSearchData, newPoint);
-    CalculateHEstimationsAfterInsert(insert_idx);
-  }
+  InsertNextPoints();
+  RecalcR();
 
   mIterationsCounter = 1;
 }
@@ -287,7 +281,6 @@ Trial MultievolventSolver::Solve()
 
   InitDataStructures();
   FirstIteration();
-  RecalcR();
 
   do {
     CalculateNextPoints();
