@@ -24,7 +24,7 @@ struct SolverParameters
   SolverParameters() {}
   SolverParameters(double _eps, double _rEps, double _r, unsigned _numEvolvents,
     MultiEvloventType _evolventType, unsigned _itersLimit, int _localMix) :
-        eps(_eps), rEps(_rEps), r(_r),  numEvolvents(_numEvolvents), evolventType(_evolventType),
+        eps(_eps), rEps(_rEps), r(_r), numEvolvents(_numEvolvents), evolventType(_evolventType),
         iterationsLimit(_itersLimit), localMix(_localMix)
   {}
 };
@@ -77,6 +77,9 @@ protected:
   void InsertNextPoints();
   bool CheckStopCondition() const;
   void EstimateOptimum();
+  bool IsLocalIteration() const;
+  double CalculateLocalR(const Interval& i) const;
+
 public:
 
   MultievolventSolver();

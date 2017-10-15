@@ -10,6 +10,8 @@
 
 #include "multievolventSolver.hpp"
 
+void saveStatistics(const std::vector<std::vector<int>>& stat, const std::string fileName);
+
 int main(int argc, char** argv)
 {
   cmdline::parser parser;
@@ -87,14 +89,18 @@ int main(int argc, char** argv)
     problem->GetOptimumPoint(optPoint);
     bool isSolved = !solver_utils::checkVectorsDiff(
       optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
-    std::cout << "Problem #" << i + 1;
+    std::cout << "Problem # " << i + 1;
     if (isSolved)
     {
       solvedCounter++;
       std::cout << " solved.";
+      allStatistics.back().push_back(1);
     }
     else
+    {
       std::cout << " not solved.";
+      allStatistics.back().push_back(0);
+    }
     std::cout << " Iterations performed: " << allStatistics.back()[0] << "\n";
   }
   auto end = std::chrono::system_clock::now();
@@ -103,5 +109,18 @@ int main(int argc, char** argv)
   std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
   std::cout << "Problems solved: " << solvedCounter << "\n";
 
+  saveStatistics(allStatistics, "stat.csv");
+
   return 0;
+}
+
+void saveStatistics(const std::vector<std::vector<int>>& stat, const std::string fileName)
+{
+  double avgIterations = 0;
+  for(size_t i = 0; i < stat.size(); i++)
+  {
+    avgIterations += stat[i].front();
+  }
+  avgIterations /= stat.size();
+  std::cout << "Average iterations number: " << avgIterations << "\n";
 }

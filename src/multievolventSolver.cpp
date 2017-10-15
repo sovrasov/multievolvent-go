@@ -218,7 +218,11 @@ void MultievolventSolver::RecalcR()
     if (currentInt.delta == 0)
       throw std::runtime_error("zero lenght interval\n");
 
-    currentInt.R = CalculateR(currentInt);
+    if(!IsLocalIteration())
+      currentInt.R = CalculateR(currentInt);
+    else
+      currentInt.R = CalculateLocalR(currentInt);
+
     if(currentInt.R > maxR)
     {
       maxR = currentInt.R;
@@ -314,4 +318,54 @@ double MultievolventSolver::CalculateR(const Interval& i) const
     return 2*i.delta - 4*(i.pr.g[i.pr.v] - mZEstimations[i.pr.v]) / (mParameters.r * mHEstimations[i.pr.v]);
   else
     return 2*i.delta - 4*(i.pl.g[i.pl.v] - mZEstimations[i.pl.v]) / (mParameters.r * mHEstimations[i.pl.v]);
+}
+
+double MultievolventSolver::CalculateLocalR(const Interval& i) const
+{
+  double value;
+  if(i.pl.v == i.pr.v)
+  {
+    const int v = i.pr.v;
+    value = CalculateR(i) / (sqrt((i.pr.g[v] - mZEstimations[v])*
+        (i.pl.g[v] - mZEstimations[v])) / (mParameters.r * mHEstimations[v]) + mLocalOffset);
+  }
+  else if(i.pl.v < i.pr.v)
+    value = CalculateR(i) / ((i.pr.g[i.pr.v] - mZEstimations[i.pr.v]) / (mParameters.r * mHEstimations[i.pr.v]) + mLocalOffset);
+  else
+    value = CalculateR(i) / ((i.pl.g[i.pl.v] - mZEstimations[i.pl.v]) / (mParameters.r * mHEstimations[i.pl.v]) + mLocalOffset);
+
+  if (!std::isfinite(value))
+    throw std::runtime_error("Infinite R!");
+
+  return value;
+}
+
+bool MultievolventSolver::IsLocalIteration() const
+{
+  if(mIterationsCounter < 100)
+    return false;
+
+  bool isLocal = false;
+
+  if (mParameters.localMix > 0) {
+    int localMixParameter = mParameters.localMix + 1;
+
+    if (mIterationsCounter % localMixParameter != 0)
+      isLocal = false;
+    else
+      isLocal = true;
+  }
+  else if (mParameters.localMix < 0) {
+    int localMixParameter = -mParameters.localMix;
+    localMixParameter++;
+
+    if (mIterationsCounter % localMixParameter != 0)
+      isLocal = true;
+    else
+      isLocal = false;
+  }
+  else //mParameters.localMix == 0
+    isLocal = false;
+
+  return isLocal;
 }
