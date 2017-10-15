@@ -28,6 +28,7 @@ int main(int argc, char** argv)
   parser.add<int>("localMix", 'q', "local mix parameter", false, 0, cmdline::range(-20, 20));
   parser.add<std::string>("problemsClass", 'c', "Name of the used problems class", false,
     "gklsS", cmdline::oneof<std::string>("gklsS", "gklsH", "grish"));
+  parser.add("accuracyStop", 'a', "Use native stop criterion instead of checking known optimum");
   parser.parse_check(argc, argv);
 
   MultiEvloventType evolventType;
@@ -44,6 +45,7 @@ int main(int argc, char** argv)
   parser.get<int>("itersLimit"),
   parser.get<int>("localMix"));
   parameters.evolventTightness = parser.get<int>("evolventTightness");
+  parameters.stopType = parser.exist("accuracyStop") ? SolverStopCriterion::Accuracy : SolverStopCriterion::OptimumVicinity;
 
   std::shared_ptr<IGOProblem<double>> problem;
   std::string problemClass = parser.get<std::string>("problemsClass");
@@ -61,7 +63,7 @@ int main(int argc, char** argv)
     {
       auto *func = new gkls::GKLSFunction();
       if (problemClass == "gklsS")
-        func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
+        func->SetFunctionClass(gkls::Simple, parser.get<int>("dim"));
       else
         func->SetFunctionClass(gkls::Hard, parser.get<int>("dim"));
 
@@ -83,7 +85,8 @@ int main(int argc, char** argv)
 
     double optPoint[solverMaxDim];
     problem->GetOptimumPoint(optPoint);
-    bool isSolved = !solver_utils::checkVectorsDiff(optPoint, optimalPoint.y, problem->GetDimension(), 0.01);
+    bool isSolved = !solver_utils::checkVectorsDiff(
+      optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
     std::cout << "Problem #" << i + 1;
     if (isSolved)
     {

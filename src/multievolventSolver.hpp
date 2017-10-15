@@ -7,6 +7,8 @@
 #include "dataTypes.hpp"
 #include "evolvents.hpp"
 
+enum class SolverStopCriterion { Accuracy, OptimumVicinity };
+
 struct SolverParameters
 {
   double eps;
@@ -17,6 +19,7 @@ struct SolverParameters
   MultiEvloventType evolventType;
   unsigned iterationsLimit;
   int localMix;
+  SolverStopCriterion stopType = SolverStopCriterion::Accuracy;
 
   SolverParameters() {}
   SolverParameters(double _eps, double _rEps, double _r, unsigned _numEvolvents,
@@ -75,6 +78,7 @@ protected:
   bool CheckStopCondition() const;
   void EstimateOptimum();
 public:
+
   MultievolventSolver();
 
   void SetParameters(const SolverParameters& params);

@@ -259,7 +259,15 @@ void MultievolventSolver::InsertNextPoints()
 
 bool MultievolventSolver::CheckStopCondition() const
 {
-  return mBestInterval.delta < mParameters.eps;
+  if(mParameters.stopType == SolverStopCriterion::Accuracy)
+    return mBestInterval.delta < mParameters.eps;
+  else
+  {
+    double optPoint[solverMaxDim];
+    mProblem->GetOptimumPoint(optPoint);
+    return !solver_utils::checkVectorsDiff(
+      mBestPoint.y, optPoint, mProblem->GetDimension(), mParameters.eps);
+  }
 }
 
 void MultievolventSolver::EstimateOptimum()
