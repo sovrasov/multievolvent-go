@@ -245,12 +245,20 @@ void MultievolventSolver::CalculateNextPoints()
 
 void MultievolventSolver::InsertNextPoints()
 {
-  mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
-  for(unsigned i = 0; i < mParameters.numEvolvents; i++)
+  if(mParameters.evolventType == MultiEvloventType::Rotated || mNextPoint.v > 0)
   {
-    Trial newPoint = mNextPoint;
-    newPoint.x = mPreimages[i];
-    size_t insert_idx = insert_sorted(mSearchData, newPoint);
+    mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
+    for (unsigned i = 0; i < mParameters.numEvolvents; i++)
+    {
+      Trial newPoint = mNextPoint;
+      newPoint.x = mPreimages[i];
+      size_t insert_idx = insert_sorted(mSearchData, newPoint);
+      CalculateHEstimationsAfterInsert(insert_idx);
+    }
+  }
+  else
+  {
+    size_t insert_idx = insert_sorted(mSearchData, mNextPoint);
     CalculateHEstimationsAfterInsert(insert_idx);
   }
 }
