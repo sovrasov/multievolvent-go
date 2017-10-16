@@ -12,7 +12,28 @@ if((${ENABLE_GCOV_SUPPORT}) AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
   message("Gcov support is enabled.")
 endif()
 
+#build test problems
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/global-optimization-test-problems/)
+
+#build gtest
+set(GOOGLETEST_ROOT 3rd-party/googletest/googletest CACHE STRING "Google Test source root")
+include_directories(
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
+    )
+set(GOOGLETEST_SOURCES
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
+    )
+foreach(_source ${GOOGLETEST_SOURCES})
+    set_source_files_properties(${_source} PROPERTIES GENERATED 1)
+endforeach()
+
+add_library(googletest ${GOOGLETEST_SOURCES})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  target_link_libraries(googletest pthread)
+endif()
 
 #build optimizer
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -36,3 +57,12 @@ add_executable(${PROJECT_NAME_STR} ${PROJECT_SOURCE_DIR}/sample/main.cpp)
 target_link_libraries(${PROJECT_NAME_STR} multi_evolvent_optimizer)
 target_link_libraries(${PROJECT_NAME_STR} gkls_functions)
 target_link_libraries(${PROJECT_NAME_STR} grishagin_functions)
+
+#build tests
+add_executable(unit_tests test/main.cpp test/solver_tests.cpp)
+target_link_libraries(unit_tests
+  multi_evolvent_optimizer googletest)
+
+include(CTest)
+enable_testing()
+add_test(unit ${PROJECT_BINARY_DIR}/unit_tests)
