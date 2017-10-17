@@ -131,26 +131,26 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
       for(const auto& elem : stat)
         if(elem.back() && elem.front() <= i)
           solvedProblemsCnt++;
-      operationCharacteristic.push_back(std::pair<int, int>(i, solvedProblemsCnt));
+      operationCharacteristic.push_back(std::make_pair(i, solvedProblemsCnt));
     }
 
     auto fileName = parser.get<std::string>("outFile");
+    const std::string sep = "_";
+    const std::string stopType = parser.exist("accuracyStop") ? "accuracy" : "optPoint";
+    std::string generatedName = parser.get<std::string>("problemsClass") + sep +
+      "n_" + std::to_string(parser.get<int>("dim")) + sep +
+      parser.get<std::string>("evolventType") + sep +
+      "l_" + std::to_string(parser.get<int>("evolventsNum")) + sep +
+      "r_" + std::to_string(parser.get<double>("reliability")) + sep +
+      "eps_" + std::to_string(parser.get<double>("accuracy")) + sep +
+      "lm_" + std::to_string(parser.get<int>("localMix")) + sep +
+      "stop_" + stopType;
     if(fileName.empty())
-    {
-      const std::string sep = "_";
-      const std::string stopType = parser.exist("accuracyStop") ? "accuracy" : "optPoint";
-      fileName = parser.get<std::string>("problemsClass") + sep +
-        "n_" + std::to_string(parser.get<int>("dim")) + sep +
-        parser.get<std::string>("evolventType") + sep +
-        "l_" + std::to_string(parser.get<int>("evolventsNum")) + sep +
-        "r_" + std::to_string(parser.get<double>("reliability")) + sep +
-        "eps_" + std::to_string(parser.get<double>("accuracy")) + sep +
-        "lm_" + std::to_string(parser.get<int>("localMix")) + sep +
-        "stop_" + stopType + ".csv";
-    }
+      fileName = generatedName + ".csv";
 
     std::ofstream fout;
     fout.open(fileName, std::ios_base::out);
+    fout << generatedName << std::endl;
     for(const auto& point : operationCharacteristic)
       fout << point.first << ", " << point.second << std::endl;
   }
