@@ -40,6 +40,9 @@ int main(int argc, char** argv)
   auto start = std::chrono::system_clock::now();
   std::vector<std::vector<int>> allStatistics;
 
+  double solutionCheckAcc = parser.exist("accuracyStop") ? parameters.eps*5 : parameters.eps;
+  double objectiveAvgConst = 0.;
+
 #pragma omp parallel for schedule(dynamic)
   for (int i = 0; i < 100; i++)
   {
@@ -70,11 +73,12 @@ int main(int argc, char** argv)
 #pragma omp critical
     {
       allStatistics.push_back(solver.GetCalculationsStatistics());
+      objectiveAvgConst += solver.GetHolderConstantsEstimations().back();
 
       double optPoint[solverMaxDim];
       problem->GetOptimumPoint(optPoint);
       bool isSolved = !solver_utils::checkVectorsDiff(
-        optPoint, optimalPoint.y, problem->GetDimension(), parameters.eps);
+        optPoint, optimalPoint.y, problem->GetDimension(), solutionCheckAcc);
       std::cout << "Problem # " << i + 1;
       if (isSolved)
       {
@@ -90,9 +94,11 @@ int main(int argc, char** argv)
     }
   }
   auto end = std::chrono::system_clock::now();
+  objectiveAvgConst /= 100;
 
   std::chrono::duration<double> elapsed_seconds = end - start;
   std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
+  std::cout << "Objective average Holder const estimation: " << objectiveAvgConst << "\n";
 
   saveStatistics(allStatistics, parser);
 

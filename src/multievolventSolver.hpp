@@ -89,4 +89,5 @@ public:
 
   Trial Solve();
   std::vector<int> GetCalculationsStatistics() const;
+  std::vector<double> GetHolderConstantsEstimations() const;
 };

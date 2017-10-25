@@ -307,6 +307,11 @@ std::vector<int> MultievolventSolver::GetCalculationsStatistics() const
   return mTrialsNumber;
 }
 
+std::vector<double> MultievolventSolver::GetHolderConstantsEstimations() const
+{
+  return mHEstimations;
+}
+
 double MultievolventSolver::CalculateR(const Interval& i) const
 {
   if(i.pl.v == i.pr.v)
