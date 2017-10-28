@@ -69,7 +69,15 @@ int main(int argc, char** argv)
     }
 
     solver.SetProblem(problem);
-    Trial optimalPoint = solver.Solve();
+    Trial optimalPoint;
+    try
+    {
+      optimalPoint = solver.Solve();
+    }
+    catch (const std::runtime_error& err)
+    {
+      std::cout << "Exception in solver! " << std::string(err.what()) << "\n";
+    }
 #pragma omp critical
     {
       allStatistics.push_back(solver.GetCalculationsStatistics());
@@ -135,7 +143,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
     {
       int solvedProblemsCnt = 0;
       for(const auto& elem : stat)
-        if(elem.back() && elem.front() <= i)
+        if(elem.back() && elem[numFuncs - 1] <= i)
           solvedProblemsCnt++;
       operationCharacteristic.push_back(std::make_pair(i, solvedProblemsCnt));
     }
