@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   auto start = std::chrono::system_clock::now();
   std::vector<std::vector<int>> allStatistics;
 
-  double solutionCheckAcc = parser.exist("accuracyStop") ? parameters.eps*5 : parameters.eps;
+  double solutionCheckAcc = parser.exist("accuracyStop") ? parameters.eps*10 : parameters.eps;
   double objectiveAvgConst = 0.;
 
 #pragma omp parallel for schedule(dynamic)
