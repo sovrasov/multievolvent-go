@@ -167,6 +167,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
     fout << generatedName << std::endl;
     for(const auto& point : operationCharacteristic)
       fout << point.first << ", " << point.second << std::endl;
+     std::cout << "Generated file name: " << fileName << std::endl;
   }
 }
 

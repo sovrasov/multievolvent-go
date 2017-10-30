@@ -10,7 +10,7 @@ import numpy as np
 def run_sample(execPath, args, r):
     assert os.path.exists(execPath)
 
-    command = execPath + ' ' + args + ' -r ' + str(r)
+    command = execPath + ' ' + args + ' -s -r ' + str(r)
     print(command)
 
     PIPE = subprocess.PIPE
@@ -34,15 +34,24 @@ def main():
 
     min_r = None
     min_found = False
+    output_file_names = []
 
     for r in grid:
         output = run_sample(exec_path, arguments, r)
         problems_solved = int(re.findall('Problems solved: (\d+)', output)[0])
+        print('Problems solved: {}'.format(problems_solved))
+
+        output_file_names.append(re.findall('Generated file name: (.*)', output)[0])
+
         if problems_solved is 100 and min_found is False:
             min_found = True
             min_r = r
 
     print('Optimal r is {}'.format(min_r))
+
+    for name in output_file_names:
+        if not str(min_r) in name:
+            os.remove(name)
 
 if __name__ == '__main__':
     main()
