@@ -26,7 +26,7 @@ def readPoints(fileName):
     return np.array(pointsK), np.array(pointsP), label
 
 colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k')
-linestyles = ['_', '-', '--', ':']
+linestyles = ['_', '-', '--', ':', '-.', '', ' ']
 markers = []
 for m in Line2D.markers:
     try:
