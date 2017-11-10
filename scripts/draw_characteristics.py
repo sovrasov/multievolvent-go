@@ -18,6 +18,8 @@ def readPoints(fileName):
     pointsP = []
 
     for line in lines:
+        if '=' in line:
+            continue
         terms = line.split(',')
 
         pointsK.append(int(terms[0]))

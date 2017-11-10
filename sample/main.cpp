@@ -138,7 +138,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
   if(parser.exist("saveStat"))
   {
     std::vector<std::pair<int, int>> operationCharacteristic;
-    const int opStep = maxIters / 150;
+    const int opStep = maxIters / 200;
     for(int i = 0; i < maxIters + opStep; i+= opStep)
     {
       int solvedProblemsCnt = 0;
@@ -165,6 +165,8 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
     std::ofstream fout;
     fout.open(fileName, std::ios_base::out);
     fout << generatedName << std::endl;
+    for(size_t j = 0; j < numFuncs; j++)
+      fout << "Average calculations number of the function # " << j << " = " << avgCalcs[j] << "\n";
     for(const auto& point : operationCharacteristic)
       fout << point.first << ", " << point.second << std::endl;
      std::cout << "Generated file name: " << fileName << std::endl;
