@@ -160,7 +160,7 @@ void MultievolventSolver::MakeTrial(Trial& trial)
   {
     mMaxV = trial.v;
     for(int i = 0; i < mMaxV; i++)
-      mZEstimations[i] = -mParameters.rEps;
+      mZEstimations[i] = -mParameters.rEps*mHEstimations[i];
   }
 
   if(trial.v == mProblem->GetConstraintsNumber())
