@@ -146,6 +146,8 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
         if(elem.back() && elem[numFuncs - 1] <= i)
           solvedProblemsCnt++;
       operationCharacteristic.push_back(std::make_pair(i, solvedProblemsCnt));
+      if(solvedProblemsCnt == stat.size())
+        break;
     }
 
     auto fileName = parser.get<std::string>("outFile");
