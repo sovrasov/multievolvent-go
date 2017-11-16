@@ -160,6 +160,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
       "r_" + std::to_string(parser.get<double>("reliability")) + sep +
       "eps_" + std::to_string(parser.get<double>("accuracy")) + sep +
       "lm_" + std::to_string(parser.get<int>("localMix")) + sep +
+      "res_" + std::to_string(parser.get<double>("reserves")) + sep +
       "stop_" + stopType;
     if(fileName.empty())
       fileName = generatedName + ".csv";
