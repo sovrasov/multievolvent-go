@@ -122,7 +122,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
 
   for(const auto& elem : stat)
   {
-    maxIters = std::max(maxIters, elem[0]);
+    maxIters = std::max(maxIters, elem[numFuncs - 1]);
     for(size_t j = 0; j < numFuncs; j++)
       avgCalcs[j] += elem[j];
     solvedCounter += elem.back();
@@ -146,7 +146,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
         if(elem.back() && elem[numFuncs - 1] <= i)
           solvedProblemsCnt++;
       operationCharacteristic.push_back(std::make_pair(i, solvedProblemsCnt));
-      if(solvedProblemsCnt == stat.size())
+      if(solvedProblemsCnt == (int)stat.size())
         break;
     }
 
