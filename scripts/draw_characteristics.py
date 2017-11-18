@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.lines import Line2D
+from os import listdir
+from os.path import isfile, join
 
 matplotlib.style.use('classic')
 
@@ -38,17 +41,28 @@ for m in Line2D.markers:
         pass
 
 def main():
-    print(markers)
-    plt.xlabel(r'$K$', fontsize=20)
-    plt.ylabel(r'$P$', fontsize=20)
+    folder = sys.argv[1]
+    iters_limit = int(sys.argv[2])
 
-    for i in range(1, len(sys.argv)):
-        K, P, label = readPoints(sys.argv[i])
-        plt.plot(K, P / 100., colors[i] + markers[i] + linestyles[i], label = label)
+    logFiles = [folder + f for f in listdir(folder) if isfile(join(folder, f)) and 'csv' in f]
+    logFiles = sorted(logFiles)
 
-    plt.legend(loc = 'best', fontsize = 10)
+    plt.xlabel(r'$K$')
+    plt.ylabel(r'$P$')
+    if not (iters_limit is 0):
+        name = sys.argv[3]
+        plt.xlim([0., iters_limit])
+
+    for i, log in enumerate(logFiles):
+        K, P, label = readPoints(log)
+        plt.plot(K, P / 100., colors[i] + ' ' + markers[i] + ' ', label = label, markersize=5)
+
     plt.grid()
-    plt.show()
+    plt.legend(loc = 'best', fontsize = 8)
+    if not (iters_limit is 0):
+        plt.savefig(folder + '/' + name, format = 'png', dpi = 500)
+    else:
+        plt.show()
 
 if __name__ == '__main__':
     main()
