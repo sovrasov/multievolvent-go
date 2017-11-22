@@ -12,7 +12,8 @@
 ../scripts/draw_characteristics.py ./gklsS2d/same_r/accuracy/ 3400 gkls2d_same_r_opt_pt_op.png
 ../scripts/draw_characteristics.py ./gklsS2d/same_r/opt_point/ 2000 gklsS2d_same_r_acc_op.png
 
-../scripts/draw_characteristics.py gklsH2d/opt_point/ 5000 gklsH2d_opt_pt_op.png
-../scripts/draw_characteristics.py gklsH2d/same_r/opt_point/ 5500 gklsH2d_same_r_opt_pt_op.png
+../scripts/draw_characteristics.py ./gklsH2d/opt_point/ 5000 gklsH2d_opt_pt_op.png
+../scripts/draw_characteristics.py ./gklsH2d/same_r/opt_point/ 5500 gklsH2d_same_r_opt_pt_op.png
 
-../scripts/draw_characteristics.py gklsS3d/opt_point/ 17000 gklsS3d_opt_pt_op.png
+../scripts/draw_characteristics.py ./gklsS3d/opt_point/ 17000 gklsS3d_opt_pt_op.png
+../scripts/draw_characteristics.py ./gklsS3d/same_r/opt_point/ 27000 gklsS3d_same_r_opt_pt_op.png
