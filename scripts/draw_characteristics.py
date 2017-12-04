@@ -47,8 +47,10 @@ def main():
     logFiles = [folder + f for f in listdir(folder) if isfile(join(folder, f)) and 'csv' in f]
     logFiles = sorted(logFiles)
 
-    plt.xlabel(r'$K$')
-    plt.ylabel(r'$P$')
+    plt.xlabel(r'$K$', fontsize=15)
+    plt.ylabel(r'$P$', fontsize=15)
+    plt.xticks(fontsize=13)
+    plt.yticks(fontsize=13)
     if not (iters_limit is 0):
         name = sys.argv[3]
         plt.xlim([0., iters_limit])
@@ -60,7 +62,7 @@ def main():
     plt.grid()
     plt.legend(loc = 'best', fontsize = 8)
     if not (iters_limit is 0):
-        plt.savefig(folder + '/' + name, format = 'png', dpi = 500)
+        plt.savefig(folder + '/' + name, format = 'pdf', dpi = 300)
     else:
         plt.show()
 
