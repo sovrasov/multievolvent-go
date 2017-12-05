@@ -2,11 +2,23 @@
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
 \usepackage{listings}
-\usepackage[a4paper]{geometry}
+\usepackage[a4paper,margin=1.in]{geometry}
 \usepackage{indentfirst}
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{float}
+
+%\setcounter{topnumber}{2}
+%\setcounter{bottomnumber}{2}
+%\setcounter{totalnumber}{4}
+%\renewcommand{\topfraction}{0.85}
+%\renewcommand{\bottomfraction}{0.85}
+%\renewcommand{\textfraction}{0.15}
+%\renewcommand{\floatpagefraction}{0.8}
+%\renewcommand{\textfraction}{0.1}
+%\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+%\setlength{\textfloatsep}{5pt plus 2pt minus 2pt}
+%\setlength{\intextsep}{5pt plus 2pt minus 2pt}
 
 \begin{document}
 
@@ -126,7 +138,8 @@ $\varepsilon=10^{-2}$. При остановке по точности $\varepsi
 Операционные характеристики были построены практически для всех столбцов таблиц из предыдущего раздела.
 В случае сдвиговой развёртки наличие дополнительного ограничения не учитывались при построении операционных характеристик.
 \subsubsection{Класс $F_{GR}$}
-\begin{figure}[H]
+
+\begin{figure}
   \center
   \includegraphics[width=0.95\textwidth]{../f_gr/opt_point/grish_opt_point_op.pdf}
   \caption{$F_{GR}$, остановка по попаданию в окрестность, минимальное значение $r$}
@@ -143,18 +156,52 @@ $\varepsilon=10^{-2}$. При остановке по точности $\varepsi
 \begin{figure}[H]
   \center
   \includegraphics[width=0.95\textwidth]{../f_gr/same_r/opt_point/grish_same_r_opt_point.pdf}
-  \caption{$F_{GR}$, остановка по попаданию в окрестность, $r$=}
+  \caption{$F_{GR}$, остановка по попаданию в окрестность, $r=3.0$}
   \label{fig:}
 \end{figure}
 
 \begin{figure}[H]
   \center
   \includegraphics[width=0.95\textwidth]{../f_gr/same_r/accuracy/grish_same_r_acc.pdf}
-  \caption{$F_{GR}$, остановка по точности, $r$=}
+  \caption{$F_{GR}$, остановка по точности, $r=3.1$}
   \label{fig:}
 \end{figure}
 
 \subsubsection{Класс gklsS2d}
+
+\begin{figure}
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS2d/opt_point/gklsS2d_opt_pt_op.pdf}
+  \caption{gklsS2d, остановка по попаданию в окрестность, минимальное значение $r$}
+  \label{fig:}
+\end{figure}
+
+\begin{figure}[H]
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS2d/accuracy/gklsS2d_acc_op.pdf}
+  \caption{gklsS2d, остановка по точности, минимальное значение $r$}
+  \label{fig:}
+\end{figure}
+
+\begin{figure}[H]
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS2d/same_r/opt_point/gklsS2d_same_r_opt_pt_op.pdf}
+  \caption{gklsS2d, остановка по попаданию в окрестность, $r=5.0$}
+  \label{fig:}
+\end{figure}
+
+\begin{figure}[H]
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS2d/same_r/accuracy/gkls2d_same_r_acc_pt_op.pdf}
+  \caption{gklsS2d, остановка по точности, $r=4.6$}
+  \label{fig:}
+\end{figure}
+
+\subsubsection{Класс gklsH2d}
+
+
+
+\subsubsection{Класс gklsS3d}
 
 \subsection{Среднее количество вычислений целевой функции}
 
