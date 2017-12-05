@@ -2,7 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
 \usepackage{listings}
-\usepackage[a4paper,margin=1.in]{geometry}
+\usepackage[a4paper,margin=1.2in]{geometry}
 \usepackage{indentfirst}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -137,6 +137,10 @@ $\varepsilon=10^{-2}$. При остановке по точности $\varepsi
 \subsection{Опeрационные характеристики}
 Операционные характеристики были построены практически для всех столбцов таблиц из предыдущего раздела.
 В случае сдвиговой развёртки наличие дополнительного ограничения не учитывались при построении операционных характеристик.
+При проведении экспериментов было замечено, что включение $\varepsilon$-резервирования практически не влияет на среднее
+количество вычислений целевой функции и на вид операционной характеристики, поэтому в данном разделе отдельно будут отмечаться
+только случаи использования смешанного локально-глобального алгоритма.
+
 \subsubsection{Класс $F_{GR}$}
 
 \begin{figure}
@@ -199,9 +203,35 @@ $\varepsilon=10^{-2}$. При остановке по точности $\varepsi
 
 \subsubsection{Класс gklsH2d}
 
+\begin{figure}
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsH2d/opt_point/gklsH2d_opt_pt_op.pdf}
+  \caption{gklsH2d, остановка по попаданию в окрестность, минимальное значение $r$}
+  \label{fig:}
+\end{figure}
 
+\begin{figure}[H]
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsH2d/same_r/opt_point/gklsH2d_same_r_opt_pt_op.pdf}
+  \caption{gklsH2d, остановка по попаданию в окрестность, $r=6.6$}
+  \label{fig:}
+\end{figure}
 
 \subsubsection{Класс gklsS3d}
+
+\begin{figure}
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS3d/opt_point/gklsS3d_opt_pt_op.pdf}
+  \caption{gklsS3d, остановка по попаданию в окрестность, минимальное значение $r$}
+  \label{fig:}
+\end{figure}
+
+\begin{figure}[H]
+  \center
+  \includegraphics[width=0.95\textwidth]{../gklsS3d/same_r/opt_point/gklsS3d_same_r_opt_pt_op.pdf}
+  \caption{gklsS3d, остановка по попаданию в окрестность, $r=5.0$}
+  \label{fig:}
+\end{figure}
 
 \subsection{Среднее количество вычислений целевой функции}
 
