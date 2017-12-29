@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     evolventType = MultiEvloventType::Shifted;
   else if(parser.get<std::string>("evolventType") == "noninjective")
   {
-    GO_ASSERT(parser.get<int>("evolventsNum") == 1);
+    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 when for non-injective evolvent");
     evolventType = MultiEvloventType::Noninjective;
   }
 
