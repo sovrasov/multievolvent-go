@@ -84,26 +84,33 @@ void MultievolventSolver::InitDataStructures()
   double leftBound[solverMaxDim], rightBound[solverMaxDim];
   mProblem->GetBounds(leftBound, rightBound);
 
+  mSearchData.clear();
+  mSearchData.reserve(mParameters.iterationsLimit*mParameters.numEvolvents);
+
+  mPreimages.resize(mParameters.numEvolvents);
+
   if(mParameters.evolventType == MultiEvloventType::Rotated)
     mEvolvent = std::shared_ptr<Evolvent>(new RotatedEvolvent(mProblem->GetDimension(), mParameters.evolventTightness,
       mParameters.numEvolvents, leftBound, rightBound));
-  else
+  else if (mParameters.evolventType == MultiEvloventType::Shifted)
   {
     mEvolvent = std::shared_ptr<Evolvent>(new ShiftedEvolvent(mProblem->GetDimension(), mParameters.evolventTightness,
     mParameters.numEvolvents, leftBound, rightBound));
     mProblem = std::shared_ptr<IGOProblem<double>>(new ShiftedEvolventGOProblem(mProblem));
   }
-
-  mSearchData.clear();
-  mSearchData.reserve(mParameters.iterationsLimit*mParameters.numEvolvents);
+  else
+  {
+    mEvolvent = std::shared_ptr<Evolvent>(new Evolvent(mProblem->GetDimension(), mParameters.evolventTightness,
+      leftBound, rightBound, MapType::Noninjective));
+    mSearchData.reserve(mParameters.iterationsLimit*pow(2, mProblem->GetDimension()));
+    mPreimages.resize(pow(2, mProblem->GetDimension()));
+  }
 
   mHEstimations.resize(mProblem->GetConstraintsNumber() + 1);
   std::fill(mHEstimations.begin(), mHEstimations.end(), 1.0);
 
   mZEstimations.resize(mProblem->GetConstraintsNumber() + 1);
   std::fill(mZEstimations.begin(), mZEstimations.end(), std::numeric_limits<double>::max());
-
-  mPreimages.resize(mParameters.numEvolvents);
 
   mTrialsNumber.resize(mProblem->GetConstraintsNumber() + 1);
   std::fill(mTrialsNumber.begin(), mTrialsNumber.end(), 0);
@@ -121,7 +128,7 @@ void MultievolventSolver::FirstIteration()
     mSearchData.back().v = -1;
   }
 
-  if(mParameters.evolventType == MultiEvloventType::Rotated)
+  if(mParameters.evolventType != MultiEvloventType::Shifted)
   {
     mNextPoint.x = 0.5;
   }
@@ -245,10 +252,10 @@ void MultievolventSolver::CalculateNextPoints()
 
 void MultievolventSolver::InsertNextPoints()
 {
-  if(mParameters.evolventType == MultiEvloventType::Rotated || mNextPoint.v > 0)
+  if(mParameters.evolventType != MultiEvloventType::Shifted || mNextPoint.v > 0)
   {
-    mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
-    for (unsigned i = 0; i < mParameters.numEvolvents; i++)
+    int numPreimages = mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
+    for (int i = 0; i < numPreimages; i++)
     {
       Trial newPoint = mNextPoint;
       newPoint.x = mPreimages[i];

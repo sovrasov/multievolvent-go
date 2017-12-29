@@ -10,7 +10,7 @@ enum MapType
 
 enum class MultiEvloventType
 {
-  Shifted, Rotated
+  Shifted, Rotated, Noninjective
 };
 
 class Evolvent
