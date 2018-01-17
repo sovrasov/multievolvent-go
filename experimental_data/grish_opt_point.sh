@@ -8,3 +8,5 @@ cd ./f_gr/opt_point && \
 ../../../build/multievolvent-sample -c grish -t shifted -e 0.01 -l 2 -r 2.4 -s -i 15000
 ../../../build/multievolvent-sample -c grish -t shifted -e 0.01 -l 3 -r 2.0 -s -i 15000
 ../../../build/multievolvent-sample -c grish -t shifted -e 0.01 -l 4 -r 2.0 -s -i 15000
+
+../../../build/multievolvent-sample -t noninjective -e 0.01 -i 10000 -c grish -r 2.7
