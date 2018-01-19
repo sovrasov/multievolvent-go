@@ -24,6 +24,11 @@ int main(int argc, char** argv)
     evolventType = MultiEvloventType::Rotated;
   else if(parser.get<std::string>("evolventType") == "shifted")
     evolventType = MultiEvloventType::Shifted;
+  else if(parser.get<std::string>("evolventType") == "noninjective")
+  {
+    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 when for non-injective evolvent");
+    evolventType = MultiEvloventType::Noninjective;
+  }
 
   auto parameters = SolverParameters(parser.get<double>("accuracy"),
   parser.get<double>("reserves"),
@@ -181,7 +186,7 @@ void initParser(cmdline::parser& parser)
   parser.add<int>("evolventTightness", 'm', "", false, 12,
     cmdline::range(9, 16));
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
-    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted"));
+    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective"));
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
         "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
   parser.add<double>("reliability", 'r', "reliability parameter for the method",

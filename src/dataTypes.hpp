@@ -1,4 +1,7 @@
 #pragma once
+#include <stdexcept>
+
+#define GO_ASSERT(x, y) if(!(x)) throw std::runtime_error(y + std::string("\n"));
 
 const unsigned solverMaxDim = 5;
 const unsigned solverMaxConstraints = 5;
