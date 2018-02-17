@@ -65,9 +65,11 @@ public:
   virtual int GetAllPreimages(const double* p, double xp[]) override;
 };
 
-class MultilevelEvolvent : public Evolvent
+class MultiLevelEvolvent : public Evolvent
 {
 protected:
+  int mLowLevelTightness;
 public:
-  MultilevelEvolvent();
+  MultiLevelEvolvent(int dimension, int highLevelTightness, const double* lb, const double* ub);
+  virtual void GetImage(double x, double y[]) override;
 };
