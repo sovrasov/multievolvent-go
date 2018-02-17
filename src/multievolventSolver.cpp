@@ -98,12 +98,17 @@ void MultievolventSolver::InitDataStructures()
     mParameters.numEvolvents, leftBound, rightBound));
     mProblem = std::shared_ptr<IGOProblem<double>>(new ShiftedEvolventGOProblem(mProblem));
   }
-  else
+  else if (mParameters.evolventType == MultiEvloventType::Noninjective)
   {
     mEvolvent = std::shared_ptr<Evolvent>(new Evolvent(mProblem->GetDimension(), mParameters.evolventTightness,
       leftBound, rightBound, MapType::Noninjective));
     mSearchData.reserve(mParameters.iterationsLimit*pow(2, mProblem->GetDimension()));
     mPreimages.resize(pow(2, mProblem->GetDimension()));
+  }
+  else
+  {
+    mEvolvent = std::shared_ptr<Evolvent>(new MultiLevelEvolvent(mProblem->GetDimension(), mParameters.evolventTightness,
+      leftBound, rightBound));
   }
 
   mHEstimations.resize(mProblem->GetConstraintsNumber() + 1);

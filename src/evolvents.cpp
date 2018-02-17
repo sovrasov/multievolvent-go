@@ -279,7 +279,6 @@ void MultiLevelEvolvent::GetImage(double x, double y[])
   TransformToSearchDomain(y, y);
 }
 
-;
 void xyd(double *xx, int m, double y[], int n)
 {
   /* calculate preimage x  for nearest level  m center to y */
