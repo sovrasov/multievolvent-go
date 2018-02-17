@@ -258,6 +258,11 @@ int ShiftedEvolvent::GetAllPreimages(const double* p, double xp[])
   return mEvolventsNum;
 }
 
+MultilevelEvolvent::MultilevelEvolvent()
+{
+  
+}
+
 
 void xyd(double *xx, int m, double y[], int n)
 {

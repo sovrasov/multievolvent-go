@@ -64,3 +64,10 @@ public:
   virtual void GetImage(double x, double y[]) override;
   virtual int GetAllPreimages(const double* p, double xp[]) override;
 };
+
+class MultilevelEvolvent : public Evolvent
+{
+protected:
+public:
+  MultilevelEvolvent();
+};
