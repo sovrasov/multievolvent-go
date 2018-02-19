@@ -190,7 +190,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
 void initParser(cmdline::parser& parser)
 {
   parser.add<int>("evolventTightness", 'm', "", false, 12,
-    cmdline::range(9, 16));
+    cmdline::range(8, 20));
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
     false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel"));
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"

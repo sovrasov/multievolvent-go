@@ -270,13 +270,15 @@ void MultiLevelEvolvent::GetImage(double x, double y[])
   double tmpY[2];
 
   mapd(x, mLowLevelTightness, tmpY, 2);
-  tmpY[0] += 0.5;
-  tmpY[1] += 0.5;
-
-  mapd(tmpY[0], mTightness, y, mDimension / 2);
-  mapd(tmpY[1], mTightness, y + mDimension / 2, mDimension / 2);
+  mapd(tmpY[0] + 0.5, mTightness, y, mDimension / 2);
+  mapd(tmpY[1] + 0.5, mTightness, y + mDimension / 2, mDimension / 2);
 
   TransformToSearchDomain(y, y);
+}
+
+int MultiLevelEvolvent::GetAllPreimages(const double* p, double xp[])
+{
+  return 0;
 }
 
 void xyd(double *xx, int m, double y[], int n)

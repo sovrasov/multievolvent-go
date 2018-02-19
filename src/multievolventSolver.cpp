@@ -257,7 +257,8 @@ void MultievolventSolver::CalculateNextPoints()
 
 void MultievolventSolver::InsertNextPoints()
 {
-  if(mParameters.evolventType != MultiEvloventType::Shifted || mNextPoint.v > 0)
+  if((mParameters.evolventType != MultiEvloventType::Shifted || mNextPoint.v > 0) &&
+    mParameters.evolventType != MultiEvloventType::MultiLevel)
   {
     int numPreimages = mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
     for (int i = 0; i < numPreimages; i++)

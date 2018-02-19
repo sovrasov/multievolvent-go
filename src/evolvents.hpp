@@ -72,4 +72,5 @@ protected:
 public:
   MultiLevelEvolvent(int dimension, int highLevelTightness, const double* lb, const double* ub);
   virtual void GetImage(double x, double y[]) override;
+  virtual int GetAllPreimages(const double* p, double xp[]) override;
 };
