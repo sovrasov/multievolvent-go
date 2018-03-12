@@ -26,8 +26,14 @@ int main(int argc, char** argv)
     evolventType = MultiEvloventType::Shifted;
   else if(parser.get<std::string>("evolventType") == "noninjective")
   {
-    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 when for non-injective evolvent");
+    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 for non-injective evolvent");
     evolventType = MultiEvloventType::Noninjective;
+  }
+  else if(parser.get<std::string>("evolventType") == "multilevel")
+  {
+    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 for multilevel evolvent");
+    GO_ASSERT(parser.get<int>("dim") % 2 == 0, "Dimension shuld be even for multilevel evolvent");
+    evolventType = MultiEvloventType::MultiLevel;
   }
 
   auto parameters = SolverParameters(parser.get<double>("accuracy"),
@@ -165,6 +171,7 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
       "r_" + std::to_string(parser.get<double>("reliability")) + sep +
       "eps_" + std::to_string(parser.get<double>("accuracy")) + sep +
       "lm_" + std::to_string(parser.get<int>("localMix")) + sep +
+      "m_" + std::to_string(parser.get<int>("evolventTightness")) + sep +
       "res_" + std::to_string(parser.get<double>("reserves")) + sep +
       "stop_" + stopType;
     if(fileName.empty())
@@ -184,9 +191,9 @@ void saveStatistics(const std::vector<std::vector<int>>& stat, const cmdline::pa
 void initParser(cmdline::parser& parser)
 {
   parser.add<int>("evolventTightness", 'm', "", false, 12,
-    cmdline::range(9, 16));
+    cmdline::range(8, 20));
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
-    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective"));
+    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel"));
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
         "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
   parser.add<double>("reliability", 'r', "reliability parameter for the method",

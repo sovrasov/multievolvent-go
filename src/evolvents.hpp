@@ -10,7 +10,7 @@ enum MapType
 
 enum class MultiEvloventType
 {
-  Shifted, Rotated, Noninjective
+  Shifted, Rotated, Noninjective, MultiLevel
 };
 
 class Evolvent
@@ -61,6 +61,16 @@ protected:
 
 public:
   ShiftedEvolvent(int dimension, int tightness, int evolventsNum, const double* lb, const double* ub);
+  virtual void GetImage(double x, double y[]) override;
+  virtual int GetAllPreimages(const double* p, double xp[]) override;
+};
+
+class MultiLevelEvolvent : public Evolvent
+{
+protected:
+  int mLowLevelTightness;
+public:
+  MultiLevelEvolvent(int dimension, int highLevelTightness, const double* lb, const double* ub);
   virtual void GetImage(double x, double y[]) override;
   virtual int GetAllPreimages(const double* p, double xp[]) override;
 };

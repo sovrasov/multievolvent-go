@@ -21,3 +21,6 @@
 #gkls 3d simple
 ../scripts/draw_characteristics.py ./gklsS3d/opt_point/ 17000 gklsS3d_opt_pt_op.pdf
 ../scripts/draw_characteristics.py ./gklsS3d/same_r/opt_point/ 27000 gklsS3d_same_r_opt_pt_op.pdf
+
+#gkls 4d simple (multilevel evolvent)
+../scripts/draw_characteristics.py ./gklsS4d/opt_point/ 70000 gklsS4d_opt_pt_op.pdf

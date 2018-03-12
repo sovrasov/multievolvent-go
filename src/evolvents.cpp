@@ -258,6 +258,28 @@ int ShiftedEvolvent::GetAllPreimages(const double* p, double xp[])
   return mEvolventsNum;
 }
 
+MultiLevelEvolvent::MultiLevelEvolvent(int dimension, int highLevelTightness, const double* lb, const double* ub) :
+  Evolvent(dimension, highLevelTightness, lb, ub)
+{
+  assert(dimension > 3 && dimension % 2 == 0);
+  mLowLevelTightness = (mDimension / 2) * highLevelTightness;
+}
+
+void MultiLevelEvolvent::GetImage(double x, double y[])
+{
+  double tmpY[2];
+
+  mapd(x, mLowLevelTightness, tmpY, 2);
+  mapd(tmpY[0] + 0.5, mTightness, y, mDimension / 2);
+  mapd(tmpY[1] + 0.5, mTightness, y + mDimension / 2, mDimension / 2);
+
+  TransformToSearchDomain(y, y);
+}
+
+int MultiLevelEvolvent::GetAllPreimages(const double* p, double xp[])
+{
+  return 0;
+}
 
 void xyd(double *xx, int m, double y[], int n)
 {
