@@ -1,4 +1,6 @@
 #include <cmath>
+#include <algorithm>
+
 #include "smoothEvolvent.hpp"
 
 using namespace std;
@@ -29,13 +31,35 @@ static double HermitDer( double y0, double d0, double y1, double d1, double h, d
 static int node ( int is, int n, int& iq, int nexp, std::vector<int>& iu, std::vector<int>& iv );
 static void SmoothEvolventDer( double x, int n, int m,std::vector<double>&y, std::vector<double>&y_, bool );
 
-SmoothEvolvent::SmoothEvolvent( int _n, int _m, double _h )
-  : n (_n)
-  , m (_m)
-  , h (_h)
-  , continuously ( h != 1. ?  true : false )
-  , smoothPointCount( 0 )
-{}
+SmoothEvolvent::SmoothEvolvent(int dimension, int tightness, const double* lb, const double* ub, double smoothness)
+      : Evolvent(dimension, tightness, lb, ub)
+{
+  n = mDimension;
+  m = mTightness;
+  h = smoothness;
+  continuously = h != 1. ?  true : false;
+  smoothPointCount = 0;
+}
+
+void SmoothEvolvent::GetImage(double x, double y[])
+{
+  if(mDimension != 1)
+  {
+    x *= 1 - pow(2., -m*n);
+    std::vector<double> y_vec, y_;
+    (*this)(x, y_vec, y_);
+    std::copy(y_vec.begin(), y_vec.end(), y);
+  }
+  else
+    y[0] = x - 0.5;
+
+  TransformToSearchDomain(y, y);
+}
+
+int SmoothEvolvent::GetAllPreimages(const double* p, double xp[])
+{
+  return 0;
+}
 
 void SmoothEvolvent::operator ()( double x, std::vector<double>&y, std::vector<double>&y_ ) const
 {
