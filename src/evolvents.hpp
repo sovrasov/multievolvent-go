@@ -10,7 +10,7 @@ enum MapType
 
 enum class MultiEvloventType
 {
-  Shifted, Rotated, Noninjective, MultiLevel
+  Shifted, Rotated, Noninjective, MultiLevel, Smooth
 };
 
 class Evolvent
@@ -73,4 +73,22 @@ public:
   MultiLevelEvolvent(int dimension, int highLevelTightness, const double* lb, const double* ub);
   virtual void GetImage(double x, double y[]) override;
   virtual int GetAllPreimages(const double* p, double xp[]) override;
+};
+
+class SmoothEvolvent : public Evolvent
+{
+protected:
+  int n,m;
+  double h;
+  mutable int smoothPointCount;
+  bool continuously;
+
+  void operator ()(double, std::vector<double>&,std::vector<double>&) const;
+  void minmax( double &a, double & b ) const;
+
+public:
+  SmoothEvolvent(int dimension, int tightness, const double* lb, const double* ub, double smoothness = 0.25);
+
+  virtual void GetImage(double x, double y[]);
+  virtual int GetAllPreimages(const double* p, double xp[]);
 };

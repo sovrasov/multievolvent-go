@@ -1,16 +1,17 @@
 #include <cmath>
 #include <algorithm>
 
-#include "smoothEvolvent.hpp"
+#include "evolvents.hpp"
 
 using namespace std;
 
 static int _Pow_int(int x, int n)
 {
-    int val = 1;
+    /*int val = 1;
     for(int i = 0; i < n; i++)
-        val *= x;
-    return val;
+        val *= x;*/
+    //return val;
+    return (int)pow(x, n);
 }
 
 static double Hermit( double y0, double d0, double y1, double d1, double h, double x)
@@ -45,7 +46,6 @@ void SmoothEvolvent::GetImage(double x, double y[])
 {
   if(mDimension != 1)
   {
-    x *= 1 - pow(2., -m*n);
     std::vector<double> y_vec, y_;
     (*this)(x, y_vec, y_);
     std::copy(y_vec.begin(), y_vec.end(), y);

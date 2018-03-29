@@ -105,9 +105,14 @@ void MultievolventSolver::InitDataStructures()
     mSearchData.reserve(mParameters.iterationsLimit*pow(2, mProblem->GetDimension()));
     mPreimages.resize(pow(2, mProblem->GetDimension()));
   }
-  else
+  else if (mParameters.evolventType == MultiEvloventType::MultiLevel)
   {
     mEvolvent = std::shared_ptr<Evolvent>(new MultiLevelEvolvent(mProblem->GetDimension(), mParameters.evolventTightness,
+      leftBound, rightBound));
+  }
+  else
+  {
+    mEvolvent = std::shared_ptr<Evolvent>(new SmoothEvolvent(mProblem->GetDimension(), mParameters.evolventTightness,
       leftBound, rightBound));
   }
 
@@ -131,6 +136,11 @@ void MultievolventSolver::FirstIteration()
   {
     mSearchData.emplace_back(static_cast<double>(i));
     mSearchData.back().v = -1;
+  }
+
+  if(mParameters.evolventType == MultiEvloventType::Smooth)
+  {
+    mSearchData.back().x = 1. - pow(2., -mProblem->GetDimension() * (int)mParameters.evolventTightness);
   }
 
   if(mParameters.evolventType != MultiEvloventType::Shifted)
@@ -258,7 +268,7 @@ void MultievolventSolver::CalculateNextPoints()
 void MultievolventSolver::InsertNextPoints()
 {
   if((mParameters.evolventType != MultiEvloventType::Shifted || mNextPoint.v > 0) &&
-    mParameters.evolventType != MultiEvloventType::MultiLevel)
+    mParameters.evolventType != MultiEvloventType::MultiLevel && mParameters.evolventType != MultiEvloventType::Smooth)
   {
     int numPreimages = mEvolvent->GetAllPreimages(mNextPoint.y, mPreimages.data());
     for (int i = 0; i < numPreimages; i++)
