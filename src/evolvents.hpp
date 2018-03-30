@@ -75,6 +75,9 @@ public:
   virtual int GetAllPreimages(const double* p, double xp[]) override;
 };
 
+/*
+Warnig: 1d domain is [0;1 - 2^(-m*n)], non [0;1]!
+*/
 class SmoothEvolvent : public Evolvent
 {
 protected:
@@ -82,9 +85,9 @@ protected:
   double h;
   mutable int smoothPointCount;
   bool continuously;
+  std::vector<double> tmp_y, tmp_y_;
 
   void operator ()(double, std::vector<double>&,std::vector<double>&) const;
-  void minmax( double &a, double & b ) const;
 
 public:
   SmoothEvolvent(int dimension, int tightness, const double* lb, const double* ub, double smoothness = 0.25);
