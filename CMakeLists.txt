@@ -51,9 +51,11 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   add_definitions(/EHsc /openmp)
 endif()
 
-#build sample
-add_executable(${PROJECT_NAME_STR} ${PROJECT_SOURCE_DIR}/sample/main.cpp)
+#build samples
+add_executable(${PROJECT_NAME_STR} ${PROJECT_SOURCE_DIR}/samples/solve_class.cpp)
+add_executable(points_dumper ${PROJECT_SOURCE_DIR}/samples/dump_points.cpp)
 
+target_link_libraries(points_dumper multi_evolvent_optimizer)
 target_link_libraries(${PROJECT_NAME_STR} multi_evolvent_optimizer)
 target_link_libraries(${PROJECT_NAME_STR} gkls_functions)
 target_link_libraries(${PROJECT_NAME_STR} grishagin_functions)
