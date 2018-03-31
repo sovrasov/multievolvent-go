@@ -52,39 +52,43 @@ int main(int argc, char** argv)
 
   int nPoints = parser.get<int>("pointsNum");
   assert(nPoints > 2);
-  double dh = (t_end - t_start) / nPoints;
+  double dt = (t_end - t_start) / nPoints;
 
   auto fileName = parser.get<std::string>("outFile");
   const std::string sep = "_";
-  const std::string stopType = parser.exist("accuracyStop") ? "accuracy" : "optPoint";
-  std::string generatedName = parser.get<std::string>("problemsClass") + sep +
-    "n_" + std::to_string(parser.get<int>("dim")) + sep +
-    parser.get<std::string>("evolventType") + sep +
+  std::string generatedName = parser.get<std::string>("evolventType") + sep +
     "l_" + std::to_string(parser.get<int>("evolventsNum")) + sep +
-    "r_" + std::to_string(parser.get<double>("reliability")) + sep +
-    "eps_" + std::to_string(parser.get<double>("accuracy")) + sep +
-    "lm_" + std::to_string(parser.get<int>("localMix")) + sep +
-    "m_" + std::to_string(parser.get<int>("evolventTightness")) + sep +
-    "res_" + std::to_string(parser.get<double>("reserves")) + sep +
-    "stop_" + stopType;
+    "n_" + std::to_string(parser.get<int>("dim")) + sep +
+    "m_" + std::to_string(parser.get<int>("evolventTightness"));
   if(fileName.empty())
     fileName = generatedName + ".csv";
 
   std::ofstream fout;
   fout.open(fileName, std::ios_base::out);
   fout << generatedName << std::endl;
-  for(size_t j = 0; j < numFuncs; j++)
-    fout << "Average calculations number of the function # " << j << " = " << avgCalcs[j] << "\n";
-  for(const auto& point : operationCharacteristic)
-    fout << point.first << ", " << point.second << std::endl;
-   std::cout << "Generated file name: " << fileName << std::endl;
+
+  std::vector<double> y(dim);
+
+  auto start = std::chrono::system_clock::now();
+  for(int i = 0; i < nPoints; i++)
+  {
+    double t = dt*i + (l - 1);
+    evolvent->GetImage(t, y.data());
+    for(int j = 0; j < dim - 1; j++)
+      fout << y[j] << ", ";
+    fout << y.back() << std::endl;
+  }
+  auto end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  std::cout << "Time elapsed: " << elapsed_seconds.count() << "s\n";
+  std::cout << "Generated file name: " << fileName << std::endl;
 
   return 0;
 }
 
 void initParser(cmdline::parser& parser)
 {
-  parser.add<int>("evolventTightness", 'm', "", false, 12, cmdline::range(8, 20));
+  parser.add<int>("evolventTightness", 'm', "", false, 12, cmdline::range(3, 20));
   parser.add<int>("pointsNum", 'n', "", false, 500);
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
     false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel", "smooth"));
