@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   std::vector<double> y(dim);
 
   auto start = std::chrono::system_clock::now();
-  for(int i = 0; i < nPoints; i++)
+  for(int i = 0; i <= nPoints; i++)
   {
     double t = dt*i + (l - 1);
     evolvent->GetImage(t, y.data());
