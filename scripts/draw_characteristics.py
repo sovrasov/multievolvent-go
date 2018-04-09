@@ -30,8 +30,8 @@ def readPoints(fileName):
 
     return np.array(pointsK), np.array(pointsP), label
 
-colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k', 'w')
-linestyles = ['_', '-', '--', ':', '-.', '', ' ', '_']
+colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k', 'tab:brown', 'w')
+linestyles = ['--', '-', '--', ':', '-.', '--', ':', '-', '--']
 markers = []
 for m in Line2D.markers:
     try:
@@ -40,12 +40,29 @@ for m in Line2D.markers:
     except TypeError:
         pass
 
+def name_to_capture(name):
+    l = name.split('_l_')[-1].split('_r_')[0]
+
+    if 'smooth' in name:
+        return 'Smooth'
+    elif 'noninjective' in name:
+        return 'Non-Univalent'
+    elif 'rotated_l_1' in name:
+        return 'Single evolvent'
+    elif 'rotated_l_' in name:
+        return 'Rotated $L=' + l + '$'
+    elif 'shifted_l_' in name:
+        return 'Shifted $L=' + l + '$'
+    return name
+
 def main():
     folder = sys.argv[1]
     iters_limit = int(sys.argv[2])
 
     logFiles = [folder + f for f in listdir(folder) if isfile(join(folder, f)) and 'csv' in f]
     logFiles = sorted(logFiles)
+
+    print('Total number of curves: {}'.format(len(logFiles)))
 
     plt.xlabel(r'$K$', fontsize=15)
     plt.ylabel(r'$P$', fontsize=15)
@@ -57,10 +74,13 @@ def main():
 
     for i, log in enumerate(logFiles):
         K, P, label = readPoints(log)
-        plt.plot(K, P / 100., colors[i] + ' ' + markers[i] + ' ', label = label, markersize=5)
+        plt.plot(K, P / 100., color = colors[i], #marker = markers[i], \
+                linestyle = linestyles[i],
+                label = name_to_capture(label), markersize=3, linewidth=2)
 
     plt.grid()
-    plt.legend(loc = 'best', fontsize = 8)
+    plt.legend(loc = 'best', fontsize = 14)
+    plt.tight_layout()
     if not (iters_limit is 0):
         plt.savefig(folder + '/' + name, format = 'pdf', dpi = 300)
     else:
