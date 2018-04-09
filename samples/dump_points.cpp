@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
   int nPoints = parser.get<int>("pointsNum");
   assert(nPoints > 2);
-  double dt = (t_end - t_start) / nPoints;
+  double dt = (t_end - t_start) / (nPoints - 1);
 
   auto fileName = parser.get<std::string>("outFile");
   const std::string sep = "_";
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   std::vector<double> y(dim);
 
   auto start = std::chrono::system_clock::now();
-  for(int i = 0; i <= nPoints; i++)
+  for(int i = 0; i < nPoints; i++)
   {
     double t = dt*i + (l - 1);
     evolvent->GetImage(t, y.data());
@@ -94,6 +94,6 @@ void initParser(cmdline::parser& parser)
     false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel", "smooth"));
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
         "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
-  parser.add<int>("dim", 'd', "test problem dimension (will be set if supported)", false, 2);
+  parser.add<int>("dim", 'd', "evolvent dimension", false, 2);
   parser.add<std::string>("outFile", 'f', "Name of the output .csv file with points", false, "");
 }
