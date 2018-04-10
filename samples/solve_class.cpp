@@ -35,6 +35,11 @@ int main(int argc, char** argv)
     GO_ASSERT(parser.get<int>("dim") % 2 == 0, "Dimension shuld be even for multilevel evolvent");
     evolventType = MultiEvloventType::MultiLevel;
   }
+  else if(parser.get<std::string>("evolventType") == "smooth")
+  {
+    GO_ASSERT(parser.get<int>("evolventsNum") == 1, "L should be 1 for smooth evolvent");
+    evolventType = MultiEvloventType::Smooth;
+  }
 
   auto parameters = SolverParameters(parser.get<double>("accuracy"),
   parser.get<double>("reserves"),
@@ -193,7 +198,7 @@ void initParser(cmdline::parser& parser)
   parser.add<int>("evolventTightness", 'm', "", false, 12,
     cmdline::range(8, 20));
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
-    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel"));
+    false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel", "smooth"));
   parser.add<int>("evolventsNum", 'l', "number of active evolvents (actually depends"
         "on evolvent type, tightness and dimenstion)", false, 1, cmdline::range(1, 20));
   parser.add<double>("reliability", 'r', "reliability parameter for the method",

@@ -10,3 +10,4 @@ cd ./gklsS2d/opt_point && \
 ../../../build/multievolvent-sample -c gklsS -t shifted -e 0.01 -l 4 -r 3.5 -s -i 100000
 
 ../../../build/multievolvent-sample -c gklsS -t noninjective -e 0.01 -i 10000 -r 3.9 -s
+../../../build/multievolvent-sample -c gklsS -t smooth -e 0.01 -i 10000 -r 4.3 -m 10 -s
