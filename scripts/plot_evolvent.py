@@ -19,8 +19,10 @@ def plot_2d_evolvent(points, style):
     fig = plt.figure()
     axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
     axes.plot(x, y, style, alpha = .8)
-    axes.set_xlabel('$x$', fontsize=14)
-    axes.set_ylabel('$y$', fontsize=14)
+    axes.set_xlabel('$y_1$', fontsize=14)
+    axes.set_ylabel('$y_2$', fontsize=14)
+    axes.set_xticks([-0.5, 0., 0.5])
+    axes.set_yticks([-0.5, 0., 0.5])
     axes.grid(linestyle='dashed', linewidth=0.5)
 
 def plot_3d_evolvent(points, style):
@@ -30,9 +32,12 @@ def plot_3d_evolvent(points, style):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot(x, y, z)
-    ax.set_xlabel('$x$', fontsize=14)
-    ax.set_ylabel('$y$', fontsize=14)
-    ax.set_zlabel('$z$', fontsize=14)
+    ax.set_xlabel('$y_1$', fontsize=14)
+    ax.set_ylabel('$y_2$', fontsize=14)
+    ax.set_zlabel('$y_3$', fontsize=14)
+    ax.set_xticks([-0.5, 0., 0.5])
+    ax.set_yticks([-0.5, 0., 0.5])
+    ax.set_zticks([-0.5, 0., 0.5])
     ax.grid(linestyle='dashed', linewidth=0.5)
 
 

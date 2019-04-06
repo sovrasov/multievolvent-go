@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
   int nPoints = parser.get<int>("pointsNum");
   assert(nPoints > 2);
-  double dt = (t_end - t_start) / (nPoints - 1);
+  double dt = (t_end - t_start) / (nPoints);
 
   auto fileName = parser.get<std::string>("outFile");
   const std::string sep = "_";
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   std::vector<double> y(dim);
 
   auto start = std::chrono::system_clock::now();
-  for(int i = 0; i < nPoints - 1; i++)
+  for(int i = 0; i < nPoints; i++)
   {
     double t = dt*i + (l - 1);
     evolvent->GetImage(t, y.data());
