@@ -19,7 +19,7 @@ Evolvent::~Evolvent()
 
 Evolvent::Evolvent(int dimension, int tightness, const double* lb, const double* ub, MapType type)
 {
-  assert(tightness > 2);
+  assert(tightness > 0);
 
   mDimension = dimension;
   mTightness = tightness;

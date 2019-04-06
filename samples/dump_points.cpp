@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 
 void initParser(cmdline::parser& parser)
 {
-  parser.add<int>("evolventTightness", 'm', "", false, 12, cmdline::range(3, 20));
+  parser.add<int>("evolventTightness", 'm', "", false, 12, cmdline::range(1, 20));
   parser.add<int>("pointsNum", 'n', "", false, 500);
   parser.add<std::string>("evolventType", 't', "Type of the used evolvent",
     false, "rotated", cmdline::oneof<std::string>("rotated", "shifted", "noninjective", "multilevel", "smooth"));
