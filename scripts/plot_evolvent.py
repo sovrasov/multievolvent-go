@@ -16,13 +16,16 @@ def plot_2d_evolvent(points, style):
 
     x, y = points[:,0], points[:,1]
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.5, 6.5))
     axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
     axes.plot(x, y, style, alpha = .8)
+    axes.set_aspect('equal')
     axes.set_xlabel('$y_1$', fontsize=14)
     axes.set_ylabel('$y_2$', fontsize=14)
     axes.set_xticks([-0.5, 0., 0.5])
     axes.set_yticks([-0.5, 0., 0.5])
+    axes.set_xlim(-0.5, 0.5)
+    axes.set_ylim(-0.5, 0.5)
     axes.grid(linestyle='dashed', linewidth=0.5)
 
 def plot_3d_evolvent(points, style):
@@ -67,7 +70,7 @@ def main():
                 points.append(point)
 
         points = np.array(points)
-        if points.shape[0] == 2:
+        if points.shape[1] == 2:
             plot_2d_evolvent(points, colors[i] + linestyles[i])
         else:
             plot_3d_evolvent(points, colors[i] + linestyles[i])
