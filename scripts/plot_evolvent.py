@@ -29,8 +29,8 @@ def plot_3d_evolvent(points, style):
     assert points.shape[1] == 3
     x, y, z = points[:,0], points[:,1], points[:,2]
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    fig = plt.figure(figsize=(4.5, 4.5))
+    ax = fig.add_subplot(111, projection='3d', aspect='equal')
     ax.plot(x, y, z)
     ax.set_xlabel('$y_1$', fontsize=14)
     ax.set_ylabel('$y_2$', fontsize=14)
@@ -38,6 +38,9 @@ def plot_3d_evolvent(points, style):
     ax.set_xticks([-0.5, 0., 0.5])
     ax.set_yticks([-0.5, 0., 0.5])
     ax.set_zticks([-0.5, 0., 0.5])
+    ax.set_xlim3d(-0.5, 0.5)
+    ax.set_ylim3d(-0.5, 0.5)
+    ax.set_zlim3d(-0.5, 0.5)
     ax.grid(linestyle='dashed', linewidth=0.5)
 
 
