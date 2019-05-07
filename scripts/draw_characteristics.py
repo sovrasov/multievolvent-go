@@ -30,7 +30,7 @@ def readPoints(fileName):
 
     return np.array(pointsK), np.array(pointsP), label
 
-colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k', 'tab:brown', 'w')
+colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k', 'tab:brown', 'tab:orange', 'tab:gray', 'tab:orange')
 linestyles = ['--', '-', '--', ':', '-.', '--', ':', '-', '--']
 markers = []
 for m in Line2D.markers:
@@ -75,7 +75,6 @@ def main():
     for i, log in enumerate(logFiles):
         K, P, label = readPoints(log)
         plt.plot(K, P / 100., color = colors[i], #marker = markers[i], \
-                linestyle = linestyles[i],
                 label = name_to_capture(label), markersize=3, linewidth=2)
 
     plt.grid()
